@@ -1,1 +1,9 @@
+---
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+---
+
+# References
 `r if (knitr:::is_html_output()) '# References {-}'`
