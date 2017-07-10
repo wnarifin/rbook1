@@ -1,0 +1,9 @@
+---
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+---
+
+# Graphical
+Summary of chapter.
