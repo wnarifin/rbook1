@@ -224,6 +224,12 @@ describeBy(infert[c("age", "parity")], group = infert$case)
 ```
 which gives us an identical result.
 
+If you want to obtain results using the basic functions (i.e. `mean`, `median`, `quantile`, `IQR` and `mad`), you need to use `lappy` within `by`, because they could not handle many variables, for example for `mean` and `IQR`,
+```{r}
+by(infert[c("age", "parity")], infert$case, function(x) lapply(x, mean))
+by(infert[c("age", "parity")], infert$case, function(x) lapply(x, IQR))
+```
+
 For categorical variables, using `summary`
 ```{r}
 by(infert[c("education", "induced", "spontaneous")], infert$case, summary)
