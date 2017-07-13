@@ -17,13 +17,13 @@ This chapter introduces readers to the basics of working with data in R. We will
 - Users can install different versions of R in a same machine or computer.
 - There is no need to uninstall if you want to upgrade the currently installed R.
 
-![Succesful R installation](R.png)
+<img>
 
 ### Starting R
 
 Double click on R icon and you should get this
 
-![R in action](openr.png)
+<img>
 
 You should see an R console.
 
@@ -31,12 +31,12 @@ You should see an R console.
 RStudio installation files can be downloaded from <http://www.rstudio.com/>.
 First, make sure you have RStudio successfully installed.
 
-![Succesful RStudio installation](rstudio.png)
+<img>
 
 #### Starting RStudio
 You can double click on RStudio icon and you will see this:
 
-![RStudio sucessfully open](rstudio.png)
+<img>
 
 #### Why RStudio?
 - Working with R console is alright. 
@@ -57,7 +57,7 @@ You should be able to see 4 panes in the layout. You should see that
 3. Environment and History - the upper right pane. It shows the currently loaded data files and values, and command history.
 4. Miscellaneous - the lower right pane. It contains most important tabs, which are Files, Plots, Packages, Help and Viewer. It list file names, show plots, show packages, display help document and view outputs.
 
-![RStudio sucessfully open](rstudio.png)
+<img>
 
 
 ## Working with packages
@@ -88,7 +88,7 @@ You can install user-contributed packages through:
 We will learn to install a few small packages.
 
 Basically, a function to install a package will look like this
-```{r}
+```{r, eval=FALSE}
 install.packages("package.name")
 ```
 
@@ -102,12 +102,12 @@ install.packages("car")
 
 ### Loading packages
 Basically, to utilize a package, it has to be loaded using `library()` function,
-```{r}
+```{r, eval=FALSE}
 library("package.name")
 ```
 
 For example, we load the newly installed `car` package
-```{r}
+```{r, eval=FALSE}
 library("haven")
 ```
 
@@ -135,15 +135,15 @@ To set your working directory:
 5.  Click *Set as working directory*
 
 or simply use `setwd` function to do so. 
-```{r}
+```{r, eval=FALSE}
 setwd("path to your folder")
 ```
 for example in Windows
-```{r}
+```{r, eval=FALSE}
 setwd("C:/myfolder")
 ```
 or in Mac OS/Linux
-```{r}
+```{r, eval=FALSE}
 setwd("~/myfolder")
 ```
 
@@ -152,40 +152,36 @@ setwd("~/myfolder")
 This section is concerned with reading data from dataset and displaying data.
 
 ### Reading data set
-Easiest is to read .csv file.
-
-```{r}
+Easiest is to read .csv file,
+```{r, eval=FALSE}
 read.csv("file.name")
 ```
 
-For SPSS file, need `foreign` package
-
-```{r}
+For SPSS file, need `foreign` package,
+```{r, eval=FALSE}
 library("foreign")
 read.spss("file.name")
 ```
 
 Can read data in table format from text file.
-From text file
-
-```{r}
+From text file,
+```{r, eval=FALSE}
 read.table("file.name", header = TRUE)
 ```
 
 ### Viewing data set
 Easy, just type the name,
-
-```r
+```{r, eval=FALSE}
 data
 ```
-Nicer, using `View()`
 
-```r
+Nicer, using `View()`
+```{r, eval=FALSE}
 View(data)
 ```
-Important tasks
 
-```r
+Important tasks
+```{r, eval=FALSE}
 dim(data)
 str(data)
 names(data)

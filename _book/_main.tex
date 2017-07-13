@@ -152,51 +152,145 @@ data in R.
 
 \section{R and RStudio}\label{r-and-rstudio}
 
-\subsection{Installing R and RStudio}\label{installing-r-and-rstudio}
+\subsection{Installation of R}\label{installation-of-r}
 
-Install R base package: \url{http://www.r-project.org/}
+\begin{itemize}
+\tightlist
+\item
+  The latest version of R is R version 3.4.1 (2017-06-30), Single
+  Candle.
+\item
+  R is available for Windows, Mac OS and Linux.
+\item
+  The installation files can be downloaded from
+  \url{https://cran.r-project.org/}.
+\item
+  Users can install different versions of R in a same machine or
+  computer.
+\item
+  There is no need to uninstall if you want to upgrade the currently
+  installed R.
+\end{itemize}
 
-Install RStudio: \url{http://www.rstudio.com/}
+\subsection{Starting R}\label{starting-r}
 
-\subsection{Getting familiar with the
-interface}\label{getting-familiar-with-the-interface}
+Double click on R icon and you should get this
 
-Consists of 4 tabs:
+You should see an R console.
+
+\subsection{Installation of RStudio}\label{installation-of-rstudio}
+
+RStudio installation files can be downloaded from
+\url{http://www.rstudio.com/}. First, make sure you have RStudio
+successfully installed.
+
+\subsubsection{Starting RStudio}\label{starting-rstudio}
+
+You can double click on RStudio icon and you will see this:
+
+\subsubsection{Why RStudio?}\label{why-rstudio}
+
+\begin{itemize}
+\tightlist
+\item
+  Working with R console is alright.
+\item
+  But for many people, they prefer to communicate with R using a
+  graphical user interface (GUI).
+\item
+  RStudio is the popular GUI and intergrated developement environment
+  (IDE) for R.
+\item
+  Other R IDE includes Microsoft R
+\end{itemize}
+
+Check this links for more info:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Source
+  RStudio \url{https://www.rstudio.com/}
 \item
-  Console
-\item
-  Environment \& History
-\item
-  Misc. Most important Plots, Packages \& Help 
+  Microsoft R
+  \url{http://blog.revolutionanalytics.com/2016/01/microsoft-r-open.html}
 \end{enumerate}
 
-\subsection{R script}\label{r-script}
+\subsubsection{RStudio interface}\label{rstudio-interface}
 
-source tab
+You should be able to see 4 panes in the layout. You should see that
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Console - the lower left pane. It tells you about your R information.
+\item
+  Source - the upper left pane. It shows the active files.
+\item
+  Environment and History - the upper right pane. It shows the currently
+  loaded data files and values, and command history.
+\item
+  Miscellaneous - the lower right pane. It contains most important tabs,
+  which are Files, Plots, Packages, Help and Viewer. It list file names,
+  show plots, show packages, display help document and view outputs.
+\end{enumerate}
+
+\section{Working with packages}\label{working-with-packages}
+
+\subsection{About packages}\label{about-packages}
+
+R uses packages to perform its tasks.
+
+There are two common packages:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \texttt{base} packages
+\item
+  \texttt{user-contributed} packages
+\end{enumerate}
 
 \begin{itemize}
 \tightlist
 \item
-  important
+  The base packages come with the installation of R
 \item
-  everything done here
+  The base package provides basic but adequate functions to perform many
+  standard data management, visualization and analysis.
 \item
-  keep track what's going on
+  However, user needs to install user-contributed packages if they need
+  to perform functions (tasks) not available in the base package
 \item
-  not recommended to type in console
+  User-contributed packages allow users to perform more advanced and
+  more complicated functions
+\item
+  There are more than 10200 packages as of March 2017
 \end{itemize}
 
-\subsection{Working with packages}\label{working-with-packages}
+For a complete list of packages, see
+\url{https://cran.r-project.org/web/packages/}
 
-what is package/library
+\subsection{Package installation}\label{package-installation}
 
-\subsubsection{Installing packages}\label{installing-packages}
+You can install user-contributed packages through:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Internet (to cran)
+\item
+  Github packages
+\item
+  Local zip files
+\end{enumerate}
+
+We will learn to install a few small packages.
+
+Basically, a function to install a package will look like this
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -204,7 +298,27 @@ what is package/library
 \end{Highlighting}
 \end{Shaded}
 
-\subsubsection{Loading libraries}\label{loading-libraries}
+To install a package, saya \texttt{car} 1. put your cursor in the
+CONSOLE pane 2. type the codes below
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"car"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  press Ctrl + ENTER
+\end{enumerate}
+
+\subsection{Loading packages}\label{loading-packages}
+
+Basically, to utilize a package, it has to be loaded using
+\texttt{library()} function,
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -212,29 +326,89 @@ what is package/library
 \end{Highlighting}
 \end{Shaded}
 
-\section{Working with Data}\label{working-with-data}
+For example, we load the newly installed \texttt{car} package
 
-\subsection{Setting working directory}\label{setting-working-directory}
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(}\StringTok{"haven"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
 
-general steps
+\section{Working directory}\label{working-directory}
 
-\begin{itemize}
+In general, R reads and saves data and other files into a working
+directory. Therefore, a user must create or specify the working
+directory to work with R. This is a good practice.
+
+A working directory:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  codes
+  stores all the outputs such as the plots, html files, pdf files
 \item
-  point-and-click 
-\end{itemize}
+  contains your data
+\end{enumerate}
 
-\subsection{Data management}\label{data-management}
+Creating a working directory is a simple BUT an important step.
 
-concerns reading data from data set, displaying data.
+Unfortunately, many users do not pay attention to this and forget to set
+it. So, remember, this is a very important step to work in R.
 
-advanced, direct input in the code, esp. useful for tables.
+\subsection{Setting a working
+directory}\label{setting-a-working-directory}
 
-\subsubsection{Reading data set}\label{reading-data-set}
+To set your working directory:
 
-Easiest is to read .csv file.
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Go back to RStudio's Miscellaneous pane.
+\item
+  In the Files tab, click \emph{\ldots{}}
+\item
+  Navigate to the folder containing your data or any folder you want to
+  work in.
+\item
+  Click \emph{More}
+\item
+  Click \emph{Set as working directory}
+\end{enumerate}
+
+or simply use \texttt{setwd} function to do so.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"path to your folder"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+for example in Windows
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"C:/myfolder"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+or in Mac OS/Linux
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"~/myfolder"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Data management}\label{data-management}
+
+This section is concerned with reading data from dataset and displaying
+data.
+
+\subsection{Reading data set}\label{reading-data-set}
+
+Easiest is to read .csv file,
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -242,7 +416,7 @@ Easiest is to read .csv file.
 \end{Highlighting}
 \end{Shaded}
 
-For SPSS file, need \texttt{foreign} package
+For SPSS file, need \texttt{foreign} package,
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -251,7 +425,7 @@ For SPSS file, need \texttt{foreign} package
 \end{Highlighting}
 \end{Shaded}
 
-Can read data in table format from text file. From text file
+Can read data in table format from text file. From text file,
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -259,7 +433,7 @@ Can read data in table format from text file. From text file
 \end{Highlighting}
 \end{Shaded}
 
-\subsubsection{Viewing data set}\label{viewing-data-set}
+\subsection{Viewing data set}\label{viewing-data-set}
 
 Easy, just type the name,
 
@@ -287,20 +461,19 @@ Important tasks
 \end{Highlighting}
 \end{Shaded}
 
-\subsection{More about data
-management}\label{more-about-data-management}
+\section{More about data management}\label{more-about-data-management}
 
-\begin{itemize}
-\tightlist
-\item
-  subsetting
-\item
-  new variable
-\item
-  recoding
-\item
-  direct input for table
-\end{itemize}
+In this section, we will deal with more advanced data management
+(subsetting, recoding and creating new variables) and direct data entry
+(especially useful for tables).
+
+\subsection{Subsetting}\label{subsetting}
+
+\subsection{Recoding}\label{recoding}
+
+\subsection{Creating new variables}\label{creating-new-variables}
+
+\subsection{Direct data entry}\label{direct-data-entry}
 
 \chapter{Textual}\label{textual}
 
@@ -1738,7 +1911,7 @@ We can create a simple barchart
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-49-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-62-1.pdf}
 
 \subsection{One variable: A numerical
 variable}\label{one-variable-a-numerical-variable}
@@ -1753,7 +1926,7 @@ Histogram
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-50-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-63-1.pdf}
 
 \section{Two variables}\label{two-variables}
 
@@ -1771,7 +1944,7 @@ We will use \texttt{scatterplot} to plot
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-51-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-64-1.pdf}
 
 Let us make a fit line
 
@@ -1785,7 +1958,7 @@ Let us make a fit line
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-52-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-65-1.pdf}
 
 and a lowess
 
@@ -1799,7 +1972,7 @@ and a lowess
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-53-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-66-1.pdf}
 
 \subsection{Two variables : A categorical variable with a categorical
 variable}\label{two-variables-a-categorical-variable-with-a-categorical-variable}
@@ -1831,7 +2004,7 @@ will use stacked barchart
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-54-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-67-1.pdf}
 
 Next, we will use grouped barchart
 
@@ -1859,7 +2032,7 @@ Next, we will use grouped barchart
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-55-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-68-1.pdf}
 
 \section{Summary}\label{summary-1}
 
@@ -1871,7 +2044,15 @@ Summary of chapter.
 
 \chapter{Summary}\label{summary-2}
 
-Summary of chapter here. Example of in text citation is Xie
+Summary of chapter here.
+
+\section{What we have learned so far}\label{what-we-have-learned-so-far}
+
+\section{Some important packages}\label{some-important-packages}
+
+\texttt{car} \texttt{dplyr}
+
+Example of in text citation is Xie
 (\protect\hyperlink{ref-xie2015}{2015})
 
 \chapter{References}\label{references}
