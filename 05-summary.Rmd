@@ -7,4 +7,11 @@ output:
 
 # Summary
 Summary of chapter here.
+
+## What we have learned so far
+
+## Some important packages
+`car`
+`dplyr`
+
 Example of in text citation is @xie2015
