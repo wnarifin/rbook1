@@ -147,26 +147,26 @@ or in Mac OS/Linux
 setwd("~/myfolder")
 ```
 
+
 ## Data management
 This section is concerned with reading data from dataset and displaying data.
 
 ### Reading data set
 Easiest is to read .csv file,
-```{r}
-data = read.csv("cholest.csv")
+```{r, eval=FALSE}
+read.csv("file.name")
 ```
 
-For SPSS and STATA files, we need `foreign` package,
+For SPSS file, need `foreign` package,
 ```{r, eval=FALSE}
 library("foreign")
-data = read.spss("cholest.sav", as.data.frame = TRUE)
-data = read.dta("cholest.dta", convert.factors = TRUE)
+read.spss("file.name")
 ```
 
-For Excel file, we need `readxl` package,
-```{r eval=FALSE}
-library("readxl")
-data = read.csv("cholest.xlsx", sheet = 1)
+Can read data in table format from text file.
+From text file,
+```{r, eval=FALSE}
+read.table("file.name", header = TRUE)
 ```
 
 ### Viewing data set
@@ -180,15 +180,6 @@ Nicer, using `View()`
 View(data)
 ```
 
-View only the first six observations,
-```{r}
-head(data)
-```
-and the last six observations,
-```{r}
-tail(data)
-```
-
 Important tasks
 ```{r, eval=FALSE}
 dim(data)
@@ -196,178 +187,16 @@ str(data)
 names(data)
 ```
 
-### Exporting data set from R
-
-You can also export data into various formats using similar packages.
-
-For example, 
-
-1.  to export data into a *comma separated version* (.csv) file, we can use `write.csv` function. 
-2.  to export data into stata format, we can use `write.dta` function
-
-```{r, eval=FALSE}
-write.csv(data, 'data.csv')
-write.dta(data, 'data.dta') 
-```
-
 ## More about data management
 In this section, we will deal with more advanced data management (subsetting, recoding and creating new variables) and direct data entry (especially useful for tables).
 
-Let say we use `cholest.csv`,
-```{r}
-data = read.csv("cholest.csv")
-dim(data)
-str(data)
-names(data)
-head(data); tail(data)
-```
-
 ### Subsetting
 
-Subsetting means "selecting parts of data". It allows selecting only a number of variables (columns) or observations (rows) from a dataframe. There are ways to do that.
-
-#### Selecting a column (variable) or a row (observation)
-
-Let say, to select `age`
-```{r}
-data$age
-```
-to select the 7th observation,
-```{r}
-data[7, ]
-```
-
-#### Selecting columns
-
-Let us create a new data frame with only `chol`, `age` and `sex` as the variables
-```{r}
-data_col <- subset(data, select = c("chol", "age", "sex"))
-str(data_col)
-```
-
-alternatively, we can use square brackets
-```{r}
-data_col <- data[ , c("chol", "age", "sex")]
-str(data_col)
-```
-
-you may even select by the column numbers
-```{r}
-data_col <- data[ , c(1:2, 4)]
-str(data_col)
-```
-selecting column 1 to 2, and column 4.
-
-#### Selecting rows
-
-To select 7th to 14th observations,
-```{r}
-data_row <- data[7:14, ]
-data_row
-```
-
-Practically, we want to choose observations based on certain criteria, for example those aged > 35 year old,
-```{r}
-data_row <- subset(data, age > 35)
-str(data_row)
-```
-
-alternatively, we can use square brackets,
-```{r}
-data_row <- data[data$age > 35, ]
-str(data_row)
-```
-
-#### Select rows and columns together
-
-Select those aged > 35, and `chol`, `age`, `sex` variables,
-```{r}
-data_rc <- subset(data, age > 35 & sex == 1, select = c("chol", "age", "sex"))
-str(data_rc)
-```
-
-#### Creating a new variable
-
-For example, create age in months,
-```{r}
-data$age_month <- data$age * 12
-data$age_month
-```
 
 ### Recoding
 
-### Categorize into new variables
 
-#### From a numerical variable
+### Creating new variables
 
-```{r}
-data$age_cat <- cut(data$age, breaks = c(-Inf,40,50,Inf),
-                    labels = c("< 40", "40-49", "> 50"))
-table(data$age_cat)
-str(data$age_cat)
-```
-
-#### From a categorical variable
-
-Using `age_cat` variable,
-```{r}
-levels(data$age_cat)
-table(data$age_cat)
-```
-Only one observation labeled as `> 50`. We want to combine `40-49` with `> 50`.
-```{r}
-library(car)
-data$age_cat1 = recode(data$age_cat, "c('40-49','> 50') = '40 & above'")
-table(data$age_cat1)  # combined
-```
 
 ### Direct data entry
-
-We may also enter short data directly using `read.table`.
-
-For example, a standard data frame,
-
-ID | Group | BMI |
----|---|---:|
-1 | Fat | 30 |
-2 | Fat | 31 | 
-3 | Fat | 32 |
-4 | Thin | 20 |
-5 | Thin | 19 |
-6 | Thin | 18 |
-
-```{r}
-data_frame = read.table(header = TRUE, text = "
-ID Group BMI
-1 Fat 30
-2 Fat 31
-3 Fat 32
-4 Thin 20
-5 Thin 19
-6 Thin 18
-")
-str(data_frame)
-data_frame
-```
-
-or a table,
-
-| | Cancer | No Cancer
-| --- | ---: | ---:
-| Smoker | 80 | 10
-| Non-smoker | 5 | 100
-
-```{r}
-data_table = read.table(header = FALSE, text = "
-80 10
-5 100
-                        ")
-colnames(data_table) = cancer = c("Cancer", "No Cancer")
-rownames(data_table) = c("Smoker", "Non-smoker")
-str(data_table)  # still a data frame, but laid out in form of a table.
-data_table
-```
-The numbers are separated by space. We set the row and column names by `rownames` and `colnames` respectively.
-
-## Summary
-In this chapter, we learned some basics in using R effectively. In the next chapter, we are going to learn about how to explore the variables by means of basic descriptive statistics.

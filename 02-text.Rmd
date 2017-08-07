@@ -14,7 +14,7 @@ In this part, we are going to use the functions as applied to a variable. For th
 data()
 ```
 
-```{r}
+```
 ## Data sets in package ‘datasets’:
 
 ## AirPassengers                     Monthly Airline Passenger Numbers 1949-1960
@@ -108,7 +108,7 @@ even simpler, obtain all of the statistics using `describe` in the `psych` packa
 ```{r eval = FALSE}
 install.packages("psych")
 ```
-```{r}
+```{r, message=FALSE, error=FALSE}
 library(psych)
 describe(chickwts$weight)
 ```
@@ -272,4 +272,4 @@ by(infert[c("education", "case")], infert$induced, table)
 ```
 
 ## Summary
-In this chapter, we learned about how to handle numerical and categorical variables and obtain the basic and relevant statistics. In the next chapter, we are going to learn about how to explore the variables in visually in form of the relevant graphs and plots.
+In this chapter, we learned about how to handle numerical and categorical variables and obtain the basic and relevant statistics. In the next chapter, we are going to learn about how to explore the variables visually in form of the relevant graphs and plots.

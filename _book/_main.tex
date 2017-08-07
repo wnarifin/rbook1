@@ -122,7 +122,7 @@
   \postauthor{\par}
   \predate{\centering\large\emph}
   \postdate{\par}
-  \date{2017-07-13}
+  \date{2017-08-07}
 
 
 \usepackage{amsthm}
@@ -412,24 +412,26 @@ Easiest is to read .csv file,
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{read.csv}\NormalTok{(}\StringTok{"file.name"}\NormalTok{)}
+\NormalTok{data =}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"cholest.csv"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-For SPSS file, need \texttt{foreign} package,
+For SPSS and STATA files, we need \texttt{foreign} package,
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{library}\NormalTok{(}\StringTok{"foreign"}\NormalTok{)}
-\KeywordTok{read.spss}\NormalTok{(}\StringTok{"file.name"}\NormalTok{)}
+\NormalTok{data =}\StringTok{ }\KeywordTok{read.spss}\NormalTok{(}\StringTok{"cholest.sav"}\NormalTok{, }\DataTypeTok{as.data.frame =} \OtherTok{TRUE}\NormalTok{)}
+\NormalTok{data =}\StringTok{ }\KeywordTok{read.dta}\NormalTok{(}\StringTok{"cholest.dta"}\NormalTok{, }\DataTypeTok{convert.factors =} \OtherTok{TRUE}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-Can read data in table format from text file. From text file,
+For Excel file, we need \texttt{readxl} package,
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{read.table}\NormalTok{(}\StringTok{"file.name"}\NormalTok{, }\DataTypeTok{header =} \OtherTok{TRUE}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(}\StringTok{"readxl"}\NormalTok{)}
+\NormalTok{data =}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"cholest.xlsx"}\NormalTok{, }\DataTypeTok{sheet =} \DecValTok{1}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -451,6 +453,42 @@ Nicer, using \texttt{View()}
 \end{Highlighting}
 \end{Shaded}
 
+View only the first six observations,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   chol age exercise sex categ
+## 1  6.5  38        6   1     0
+## 2  6.6  35        5   1     0
+## 3  6.8  39        6   1     0
+## 4  6.8  36        5   1     0
+## 5  6.9  31        4   1     0
+## 6  7.0  38        4   1     0
+\end{verbatim}
+
+and the last six observations,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{tail}\NormalTok{(data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    chol age exercise sex categ
+## 75  9.4  45        4   0     2
+## 76  9.5  52        4   0     2
+## 77  9.6  35        4   0     2
+## 78  9.8  43        3   0     2
+## 79  9.9  47        3   0     2
+## 80 10.0  44        3   0     2
+\end{verbatim}
+
 Important tasks
 
 \begin{Shaded}
@@ -461,19 +499,473 @@ Important tasks
 \end{Highlighting}
 \end{Shaded}
 
+\subsection{Exporting data set from R}\label{exporting-data-set-from-r}
+
+You can also export data into various formats using similar packages.
+
+For example,
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  to export data into a \emph{comma separated version} (.csv) file, we
+  can use \texttt{write.csv} function.
+\item
+  to export data into stata format, we can use \texttt{write.dta}
+  function
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{write.csv}\NormalTok{(data, }\StringTok{'data.csv'}\NormalTok{)}
+\KeywordTok{write.dta}\NormalTok{(data, }\StringTok{'data.dta'}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
 \section{More about data management}\label{more-about-data-management}
 
 In this section, we will deal with more advanced data management
 (subsetting, recoding and creating new variables) and direct data entry
 (especially useful for tables).
 
+Let say we use \texttt{cholest.csv},
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data =}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"cholest.csv"}\NormalTok{)}
+\KeywordTok{dim}\NormalTok{(data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 80  5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    80 obs. of  5 variables:
+##  $ chol    : num  6.5 6.6 6.8 6.8 6.9 7 7 7.2 7.2 7.2 ...
+##  $ age     : int  38 35 39 36 31 38 33 36 40 34 ...
+##  $ exercise: int  6 5 6 5 4 4 5 5 4 6 ...
+##  $ sex     : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ categ   : int  0 0 0 0 0 0 0 0 0 0 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "chol"     "age"      "exercise" "sex"      "categ"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(data); }\KeywordTok{tail}\NormalTok{(data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   chol age exercise sex categ
+## 1  6.5  38        6   1     0
+## 2  6.6  35        5   1     0
+## 3  6.8  39        6   1     0
+## 4  6.8  36        5   1     0
+## 5  6.9  31        4   1     0
+## 6  7.0  38        4   1     0
+\end{verbatim}
+
+\begin{verbatim}
+##    chol age exercise sex categ
+## 75  9.4  45        4   0     2
+## 76  9.5  52        4   0     2
+## 77  9.6  35        4   0     2
+## 78  9.8  43        3   0     2
+## 79  9.9  47        3   0     2
+## 80 10.0  44        3   0     2
+\end{verbatim}
+
 \subsection{Subsetting}\label{subsetting}
+
+Subsetting means ``selecting parts of data''. It allows selecting only a
+number of variables (columns) or observations (rows) from a dataframe.
+There are ways to do that.
+
+\subsubsection{Selecting a column (variable) or a row
+(observation)}\label{selecting-a-column-variable-or-a-row-observation}
+
+Let say, to select \texttt{age}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data$age}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 38 35 39 36 31 38 33 36 40 34 38 40 40 28 37 38 49 29 40 38 34 46 42
+## [24] 38 32 43 42 40 38 39 39 39 35 38 40 38 45 36 31 34 44 35 40 37 33 46
+## [47] 42 40 45 42 45 38 34 44 39 38 39 47 41 44 30 48 47 42 42 49 31 38 38
+## [70] 48 34 45 45 36 45 52 35 43 47 44
+\end{verbatim}
+
+to select the 7th observation,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data[}\DecValTok{7}\NormalTok{, ]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   chol age exercise sex categ
+## 7    7  33        5   1     0
+\end{verbatim}
+
+\subsubsection{Selecting columns}\label{selecting-columns}
+
+Let us create a new data frame with only \texttt{chol}, \texttt{age} and
+\texttt{sex} as the variables
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data_col <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(data, }\DataTypeTok{select =} \KeywordTok{c}\NormalTok{(}\StringTok{"chol"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"sex"}\NormalTok{))}
+\KeywordTok{str}\NormalTok{(data_col)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    80 obs. of  3 variables:
+##  $ chol: num  6.5 6.6 6.8 6.8 6.9 7 7 7.2 7.2 7.2 ...
+##  $ age : int  38 35 39 36 31 38 33 36 40 34 ...
+##  $ sex : int  1 1 1 1 1 1 1 1 1 1 ...
+\end{verbatim}
+
+alternatively, we can use square brackets
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data_col <-}\StringTok{ }\NormalTok{data[ , }\KeywordTok{c}\NormalTok{(}\StringTok{"chol"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"sex"}\NormalTok{)]}
+\KeywordTok{str}\NormalTok{(data_col)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    80 obs. of  3 variables:
+##  $ chol: num  6.5 6.6 6.8 6.8 6.9 7 7 7.2 7.2 7.2 ...
+##  $ age : int  38 35 39 36 31 38 33 36 40 34 ...
+##  $ sex : int  1 1 1 1 1 1 1 1 1 1 ...
+\end{verbatim}
+
+you may even select by the column numbers
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data_col <-}\StringTok{ }\NormalTok{data[ , }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{:}\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{)]}
+\KeywordTok{str}\NormalTok{(data_col)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    80 obs. of  3 variables:
+##  $ chol: num  6.5 6.6 6.8 6.8 6.9 7 7 7.2 7.2 7.2 ...
+##  $ age : int  38 35 39 36 31 38 33 36 40 34 ...
+##  $ sex : int  1 1 1 1 1 1 1 1 1 1 ...
+\end{verbatim}
+
+selecting column 1 to 2, and column 4.
+
+\subsubsection{Selecting rows}\label{selecting-rows}
+
+To select 7th to 14th observations,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data_row <-}\StringTok{ }\NormalTok{data[}\DecValTok{7}\NormalTok{:}\DecValTok{14}\NormalTok{, ]}
+\NormalTok{data_row}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    chol age exercise sex categ
+## 7   7.0  33        5   1     0
+## 8   7.2  36        5   1     0
+## 9   7.2  40        4   1     0
+## 10  7.2  34        6   1     0
+## 11  7.3  38        6   1     0
+## 12  7.3  40        5   1     0
+## 13  7.3  40        4   1     0
+## 14  7.3  28        5   1     0
+\end{verbatim}
+
+Practically, we want to choose observations based on certain criteria,
+for example those aged \textgreater{} 35 year old,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data_row <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(data, age >}\StringTok{ }\DecValTok{35}\NormalTok{)}
+\KeywordTok{str}\NormalTok{(data_row)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    62 obs. of  5 variables:
+##  $ chol    : num  6.5 6.8 6.8 7 7.2 7.2 7.3 7.3 7.3 7.3 ...
+##  $ age     : int  38 39 36 38 36 40 38 40 40 37 ...
+##  $ exercise: int  6 6 5 4 5 4 6 5 4 5 ...
+##  $ sex     : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ categ   : int  0 0 0 0 0 0 0 0 0 0 ...
+\end{verbatim}
+
+alternatively, we can use square brackets,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data_row <-}\StringTok{ }\NormalTok{data[data$age >}\StringTok{ }\DecValTok{35}\NormalTok{, ]}
+\KeywordTok{str}\NormalTok{(data_row)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    62 obs. of  5 variables:
+##  $ chol    : num  6.5 6.8 6.8 7 7.2 7.2 7.3 7.3 7.3 7.3 ...
+##  $ age     : int  38 39 36 38 36 40 38 40 40 37 ...
+##  $ exercise: int  6 6 5 4 5 4 6 5 4 5 ...
+##  $ sex     : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ categ   : int  0 0 0 0 0 0 0 0 0 0 ...
+\end{verbatim}
+
+\subsubsection{Select rows and columns
+together}\label{select-rows-and-columns-together}
+
+Select those aged \textgreater{} 35, and \texttt{chol}, \texttt{age},
+\texttt{sex} variables,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data_rc <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(data, age >}\StringTok{ }\DecValTok{35} \NormalTok{&}\StringTok{ }\NormalTok{sex ==}\StringTok{ }\DecValTok{1}\NormalTok{, }\DataTypeTok{select =} \KeywordTok{c}\NormalTok{(}\StringTok{"chol"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"sex"}\NormalTok{))}
+\KeywordTok{str}\NormalTok{(data_rc)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    29 obs. of  3 variables:
+##  $ chol: num  6.5 6.8 6.8 7 7.2 7.2 7.3 7.3 7.3 7.3 ...
+##  $ age : int  38 39 36 38 36 40 38 40 40 37 ...
+##  $ sex : int  1 1 1 1 1 1 1 1 1 1 ...
+\end{verbatim}
+
+\subsubsection{Creating a new variable}\label{creating-a-new-variable}
+
+For example, create age in months,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data$age_month <-}\StringTok{ }\NormalTok{data$age *}\StringTok{ }\DecValTok{12}
+\NormalTok{data$age_month}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 456 420 468 432 372 456 396 432 480 408 456 480 480 336 444 456 588
+## [18] 348 480 456 408 552 504 456 384 516 504 480 456 468 468 468 420 456
+## [35] 480 456 540 432 372 408 528 420 480 444 396 552 504 480 540 504 540
+## [52] 456 408 528 468 456 468 564 492 528 360 576 564 504 504 588 372 456
+## [69] 456 576 408 540 540 432 540 624 420 516 564 528
+\end{verbatim}
 
 \subsection{Recoding}\label{recoding}
 
-\subsection{Creating new variables}\label{creating-new-variables}
+\subsection{Categorize into new
+variables}\label{categorize-into-new-variables}
+
+\subsubsection{From a numerical
+variable}\label{from-a-numerical-variable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data$age_cat <-}\StringTok{ }\KeywordTok{cut}\NormalTok{(data$age, }\DataTypeTok{breaks =} \KeywordTok{c}\NormalTok{(-}\OtherTok{Inf}\NormalTok{,}\DecValTok{40}\NormalTok{,}\DecValTok{50}\NormalTok{,}\OtherTok{Inf}\NormalTok{),}
+                    \DataTypeTok{labels =} \KeywordTok{c}\NormalTok{(}\StringTok{"< 40"}\NormalTok{, }\StringTok{"40-49"}\NormalTok{, }\StringTok{"> 50"}\NormalTok{))}
+\KeywordTok{table}\NormalTok{(data$age_cat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  < 40 40-49  > 50 
+##    51    28     1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(data$age_cat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  Factor w/ 3 levels "< 40","40-49",..: 1 1 1 1 1 1 1 1 1 1 ...
+\end{verbatim}
+
+\subsubsection{From a categorical
+variable}\label{from-a-categorical-variable}
+
+Using \texttt{age\_cat} variable,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{levels}\NormalTok{(data$age_cat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "< 40"  "40-49" "> 50"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{table}\NormalTok{(data$age_cat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  < 40 40-49  > 50 
+##    51    28     1
+\end{verbatim}
+
+Only one observation labeled as \texttt{\textgreater{}\ 50}. We want to
+combine \texttt{40-49} with \texttt{\textgreater{}\ 50}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(car)}
+\NormalTok{data$age_cat1 =}\StringTok{ }\KeywordTok{recode}\NormalTok{(data$age_cat, }\StringTok{"c('40-49','> 50') = '40 & above'"}\NormalTok{)}
+\KeywordTok{table}\NormalTok{(data$age_cat1)  }\CommentTok{# combined}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##       < 40 40 & above 
+##         51         29
+\end{verbatim}
 
 \subsection{Direct data entry}\label{direct-data-entry}
+
+We may also enter short data directly using \texttt{read.table}.
+
+For example, a standard data frame,
+
+\begin{longtable}[]{@{}llr@{}}
+\toprule
+ID & Group & BMI\tabularnewline
+\midrule
+\endhead
+1 & Fat & 30\tabularnewline
+2 & Fat & 31\tabularnewline
+3 & Fat & 32\tabularnewline
+4 & Thin & 20\tabularnewline
+5 & Thin & 19\tabularnewline
+6 & Thin & 18\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data_frame =}\StringTok{ }\KeywordTok{read.table}\NormalTok{(}\DataTypeTok{header =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{text =} \StringTok{"}
+\StringTok{ID Group BMI}
+\StringTok{1 Fat 30}
+\StringTok{2 Fat 31}
+\StringTok{3 Fat 32}
+\StringTok{4 Thin 20}
+\StringTok{5 Thin 19}
+\StringTok{6 Thin 18}
+\StringTok{"}\NormalTok{)}
+\KeywordTok{str}\NormalTok{(data_frame)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    6 obs. of  3 variables:
+##  $ ID   : int  1 2 3 4 5 6
+##  $ Group: Factor w/ 2 levels "Fat","Thin": 1 1 1 2 2 2
+##  $ BMI  : int  30 31 32 20 19 18
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data_frame}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   ID Group BMI
+## 1  1   Fat  30
+## 2  2   Fat  31
+## 3  3   Fat  32
+## 4  4  Thin  20
+## 5  5  Thin  19
+## 6  6  Thin  18
+\end{verbatim}
+
+or a table,
+
+\begin{longtable}[]{@{}lrr@{}}
+\toprule
+& Cancer & No Cancer\tabularnewline
+\midrule
+\endhead
+Smoker & 80 & 10\tabularnewline
+Non-smoker & 5 & 100\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data_table =}\StringTok{ }\KeywordTok{read.table}\NormalTok{(}\DataTypeTok{header =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{text =} \StringTok{"}
+\StringTok{80 10}
+\StringTok{5 100}
+\StringTok{                        "}\NormalTok{)}
+\KeywordTok{colnames}\NormalTok{(data_table) =}\StringTok{ }\NormalTok{cancer =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Cancer"}\NormalTok{, }\StringTok{"No Cancer"}\NormalTok{)}
+\KeywordTok{rownames}\NormalTok{(data_table) =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Smoker"}\NormalTok{, }\StringTok{"Non-smoker"}\NormalTok{)}
+\KeywordTok{str}\NormalTok{(data_table)  }\CommentTok{# still a data frame, but laid out in form of a table.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    2 obs. of  2 variables:
+##  $ Cancer   : int  80 5
+##  $ No Cancer: int  10 100
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data_table}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            Cancer No Cancer
+## Smoker         80        10
+## Non-smoker      5       100
+\end{verbatim}
+
+The numbers are separated by space. We set the row and column names by
+\texttt{rownames} and \texttt{colnames} respectively.
+
+\section{Summary}\label{summary}
+
+In this chapter, we learned some basics in using R effectively. In the
+next chapter, we are going to learn about how to explore the variables
+by means of basic descriptive statistics.
 
 \chapter{Textual}\label{textual}
 
@@ -496,18 +988,16 @@ You can view the available datasets by
 \end{Highlighting}
 \end{Shaded}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{## Data sets in package ‘datasets’:}
+\begin{verbatim}
+## Data sets in package ‘datasets’:
 
-\NormalTok{## AirPassengers                     Monthly Airline Passenger Numbers 1949-1960}
-\NormalTok{## BJsales                           Sales Data with Leading Indicator}
-\NormalTok{## BJsales.lead (BJsales)            Sales Data with Leading Indicator}
-\NormalTok{## BOD                               Biochemical Oxygen Demand}
-\NormalTok{## CO2                               Carbon Dioxide Uptake in Grass Plants}
-\NormalTok{## ...}
-\end{Highlighting}
-\end{Shaded}
+## AirPassengers                     Monthly Airline Passenger Numbers 1949-1960
+## BJsales                           Sales Data with Leading Indicator
+## BJsales.lead (BJsales)            Sales Data with Leading Indicator
+## BOD                               Biochemical Oxygen Demand
+## CO2                               Carbon Dioxide Uptake in Grass Plants
+## ...
+\end{verbatim}
 
 We can view any dataset description by appending ``?'' to the dataset
 name. For example,
@@ -1784,12 +2274,12 @@ which will look nicer if we apply \texttt{by}
 ##   12+ yrs      13    3
 \end{verbatim}
 
-\section{Summary}\label{summary}
+\section{Summary}\label{summary-1}
 
 In this chapter, we learned about how to handle numerical and
 categorical variables and obtain the basic and relevant statistics. In
 the next chapter, we are going to learn about how to explore the
-variables in visually in form of the relevant graphs and plots.
+variables visually in form of the relevant graphs and plots.
 
 \chapter{Graphical}\label{graphical}
 
@@ -1911,7 +2401,7 @@ We can create a simple barchart
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-62-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-80-1.pdf}
 
 \subsection{One variable: A numerical
 variable}\label{one-variable-a-numerical-variable}
@@ -1926,7 +2416,7 @@ Histogram
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-63-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-81-1.pdf}
 
 \section{Two variables}\label{two-variables}
 
@@ -1944,7 +2434,7 @@ We will use \texttt{scatterplot} to plot
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-64-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-82-1.pdf}
 
 Let us make a fit line
 
@@ -1958,7 +2448,7 @@ Let us make a fit line
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-65-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-83-1.pdf}
 
 and a lowess
 
@@ -1972,7 +2462,7 @@ and a lowess
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-66-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-84-1.pdf}
 
 \subsection{Two variables : A categorical variable with a categorical
 variable}\label{two-variables-a-categorical-variable-with-a-categorical-variable}
@@ -2004,7 +2494,7 @@ will use stacked barchart
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-67-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-85-1.pdf}
 
 Next, we will use grouped barchart
 
@@ -2032,9 +2522,9 @@ Next, we will use grouped barchart
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-68-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-86-1.pdf}
 
-\section{Summary}\label{summary-1}
+\section{Summary}\label{summary-2}
 
 {[}summary here{]}
 
@@ -2042,7 +2532,7 @@ Next, we will use grouped barchart
 
 Summary of chapter.
 
-\chapter{Summary}\label{summary-2}
+\chapter{Summary}\label{summary-3}
 
 Summary of chapter here.
 
