@@ -108,7 +108,7 @@ library("package.name")
 
 For example, we load the newly installed `car` package
 ```{r, eval=FALSE}
-library("haven")
+library("car")
 ```
 
 
@@ -166,7 +166,7 @@ data = read.dta("cholest.dta", convert.factors = TRUE)
 For Excel file, we need `readxl` package,
 ```{r eval=FALSE}
 library("readxl")
-data = read.csv("cholest.xlsx", sheet = 1)
+data = read_excel("cholest.xlsx", sheet = 1)
 ```
 
 ### Viewing data set
