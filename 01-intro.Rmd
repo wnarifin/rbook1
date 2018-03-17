@@ -54,7 +54,7 @@ You should be able to see 4 panes in the layout. You should see that
 ![Panes in RStudio](img/panes.jpg)
 
 ## Functions and objects
-Before we start, there are a number of basics to understand the syntax in R. These are functions and objects.
+Before we start, there are a number of basics that you must know to understand the syntax in R. These are functions and objects.
 
 ### Functions
 R commands are in form of `function()`. You can think of MS Excel function. Inside a function, there will be a number of options. We will see this as we go through the examples later.
