@@ -1,14 +1,12 @@
 ---
 output:
   pdf_document: default
-  html_document:
-    keep_md: yes
 ---
 
-# Textual
+# Descriptive statistics
 In this chapter, we will go through a number of R functions for basic statistics. The focus will be on the results that are presented in form of numbers in text or tables (textual). We will mostly use the builtin functions (from R standard library). Extra packages will be introduced whenever necessary.
 
-## Basic descriptive statistics
+## Preliminaries
 In this part, we are going to use the functions as applied to a variable. For this purpose, we are going to use builtin datasets in R. You can view the available datasets by
 ```{r}
 data()
@@ -58,7 +56,9 @@ We can view the levels in `feed`,
 levels(chickwts$feed)
 ```
 
-### Describing a numerical variable
+## One variable
+
+### A numerical variable
 A numberical variable is described by a number of descriptive statistics below.
 
 To judge the central tendency of the `weight` variable, we obtain its mean,
@@ -113,8 +113,7 @@ library(psych)
 describe(chickwts$weight)
 ```
 
-
-### Describing a categorical variable
+### A categorical variable
 A categorical variable is described by its count, proportion and percentage by categories.
 
 We obtain the count of the `feed` variable,
@@ -138,10 +137,11 @@ cbind(n = table(chickwts$feed), "%" = prop.table(table(chickwts$feed))*100)
 ```
 We need the quotation marks " " around the percentage sign %, because % also serves as a mathematical operator in R.
 
-## More on descriptive statistics
+
+## Two variables and more
 Just now, we viewed all the statistics as applied to a variable. In this part, we are going to view the statistics on a number of variables. This includes viewing a group of numerical variables or categorical variables, or a mixture of numerical and categorical variables. This is relevant in a sense that, most of the time, we want to view everything in one go (e.g. the statistics of all items in a questionnaire), compare the means of several groups and obtain cross-tabulation of categorical variables.
 
-### Describing numerical variables
+### Numerical variables
 Let us use `women` dataset,
 ```{r}
 head(women)
@@ -159,7 +159,7 @@ even better using `describe` (`psych`),
 describe(women)
 ```
 
-### Describing categorical variables
+### Categorical variables
 Let us use `infert` dataset,
 ```{r}
 head(infert)
@@ -172,9 +172,9 @@ We notice that `induced`, `case` and `spontaneous` are not yet set as categorica
 ```
 We label the values in the variables according to the description as
 ```{r}
-infert$induced = factor(infert$induced, levels = 0:2, labels = c("0", "1", "2 or more"))
-infert$case = factor(infert$case, levels = 0:1, labels = c("control", "case"))
-infert$spontaneous = factor(infert$spontaneous, levels = 0:2, labels = c("0", "1", "2 or more"))
+infert$induced <- factor(infert$induced, levels = 0:2, labels = c("0", "1", "2 or more"))
+infert$case <- factor(infert$case, levels = 0:1, labels = c("control", "case"))
+infert$spontaneous <- factor(infert$spontaneous, levels = 0:2, labels = c("0", "1", "2 or more"))
 str(infert)
 ```
 and we now all these variables are turned into factors.
@@ -209,10 +209,11 @@ lapply(infert[c("education", "induced", "case", "spontaneous")],
 ```
 Notice here, whenever we do not need to specify extra operations on a basic function, e.g. `summary` and `table`, all we need to write after the comma in `lapply` is the basic function without `function(x)` and `(x)`.
 
-### Describing the variables together
+
+## Groups and cross-tabulations
 We intentionally went through the descriptive statistics of a variable, followed by a number of variables of the same type. This will give you the basics in dealing with the variables. Most commonly, the variables are described by groups or in form cross-tabulated counts/percentages.
 
-#### By groups
+### By groups
 To obtain all the descriptive statistics by group, we can use `by` with the relevant functions. Let say we want to obtain the statistics by case and control (`case`). We start with numerical variables
 ```{r}
 by(infert[c("age", "parity")], infert$case, summary)
@@ -249,7 +250,7 @@ by(infert[c("education", "induced", "spontaneous")], infert$case,
 ```
 Please note that simply replacing `table` for `summary` as in `by(infert[c("education", "induced", "spontaneous")], infert$case, table)` will not work as intended. `education` will be nested in `induced`, which is nested in `spontaneous`, listed by `case` instead. And yes, to obtain the proportions and percentages, it gets slightly more complicated as we have to specify `function` twice in `by`.
 
-#### Simple cross-tabulation
+### Cross-tabulation
 As long as the categorical variables are already `factor`ed properly, there should not be a problem to obtain the cross-tabulation tables. For example between `education` and `case`,
 ```{r}
 table(infert$education, infert$case)

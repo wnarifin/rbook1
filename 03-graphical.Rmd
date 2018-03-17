@@ -1,25 +1,23 @@
 ---
 output:
   pdf_document: default
-  html_document:
-    keep_md: yes
 ---
 
-# Graphical
-[Summary of chapter here]
-
-In graphing or plotting data, you must ask yourselves these:
+# Visual exploration
+[elaborate here]
+In this chapter, we will explore the data visually by plots. In plotting the data, you must ask yourselves these:
 
 1.  Which variable do you want to plot?
 2.  What is the type of that variable? Factor? Numerical?
 3.  Are you going to plot another variable together?
 
 ## Preliminaries
+
 ### Reading dataset
 We will use `qol.sav` dataset in this chapter. Create an object namely `dataSPSS` to the data read into R.  
 ```{r}
 library(foreign)
-dataSPSS<-read.spss('qol.sav', to.data.frame = TRUE)
+dataSPSS <- read.spss('qol.sav', to.data.frame = TRUE)
 ```
 
 ### Describing data
@@ -34,7 +32,8 @@ summary(dataSPSS)
 ```
 
 ## One variable
-### One variable: A categorical or factor variable
+
+### A categorical variable
 We can create a simple barchart
 ```{r}
 dist.sex<-table(dataSPSS$sex)
@@ -43,16 +42,16 @@ barplot(dist.sex,
         xlab='Sex')
 ```
 
-### One variable: A numerical variable
+### A numerical variable
 Histogram
 ```{r}
 hist(dataSPSS$age, main = 'Age',
-     xlab='Age in years',
-     ylab='Count')
+     xlab = 'Age in years',
+     ylab = 'Count')
 ```
 
 ## Two variables
-### Two variables : A numerical with another numerical variable
+### A numerical with another numerical variable
 We will use `scatterplot` to plot 
 ```{r}
 plot(dataSPSS$tahundx, dataSPSS$age,
@@ -79,7 +78,7 @@ plot(dataSPSS$tahundx, dataSPSS$age,
 lines(lowess(dataSPSS$tahundx,dataSPSS$age), col = 'blue')
 ```
 
-### Two variables : A categorical variable with a categorical variable
+### A categorical variable with a categorical variable
 Now, we will plot 2 categorical variables simultanenously. First, we will use stacked barchart
 ```{r}
 compl.sex<-table(dataSPSS$complica,dataSPSS$sex)
@@ -101,6 +100,20 @@ barplot(compl.sex,
         legend = c('no','yes'),
         beside = TRUE)
 ```
+
+## Multiple plots in one go
+Here we will use some tricks, to show multiple plots in one go.
+```{r}
+dataSPSS.4 <- dataSPSS[,c("age", "hba1c", "fbs", "choleste")]
+par(mfrow = c(2, 2))  # two rows and two columns
+mapply(hist, dataSPSS.4)  # not nice, no proper labels
+mapply(hist, dataSPSS.4,
+       main = paste("Histogram of ", colnames(dataSPSS.4)), 
+       xlab = colnames(dataSPSS.4))  # nice with labels
+par(mfrow = c(1, 1))  # reset back to only one plot per view
+```
+As you can see, we used `paste`. We will learn more about `paste` later.
+
 
 ## Summary
 [summary here]

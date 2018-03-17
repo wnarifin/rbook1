@@ -1,9 +1,18 @@
 ---
 output:
   pdf_document: default
-  html_document:
-    keep_md: yes
 ---
 
 # Reporting results
-Summary of chapter.
+In this chapter, we will learn how to combine bits and parts of your results into custom-made texts, labels and tables. This will be useful for reporting and summarizing your results for publication, as well as labeling specific axes on your plots. There are a number of ways to achieve this. We will do this by basic functions and packages.
+
+## `cbind` and `data.frame`
+
+
+## `paste` and `paste0`
+
+
+## `kable`
+
+
+## `stargazer`

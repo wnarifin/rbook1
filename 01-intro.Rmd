@@ -1,8 +1,6 @@
 ---
 output:
   pdf_document: default
-  html_document:
-    keep_md: yes
 ---
 
 # Introduction to R
@@ -17,13 +15,11 @@ This chapter introduces readers to the basics of working with data in R. We will
 - Users can install different versions of R in a same machine or computer.
 - There is no need to uninstall if you want to upgrade the currently installed R.
 
-<img>
-
 ### Starting R
 
 Double click on R icon and you should get this
 
-<img>
+![R console](img/openr.png)
 
 You should see an R console.
 
@@ -31,12 +27,10 @@ You should see an R console.
 RStudio installation files can be downloaded from <http://www.rstudio.com/>.
 First, make sure you have RStudio successfully installed.
 
-<img>
-
 #### Starting RStudio
 You can double click on RStudio icon and you will see this:
 
-<img>
+![RStudio](img/panes.jpg)
 
 #### Why RStudio?
 - Working with R console is alright. 
@@ -57,7 +51,24 @@ You should be able to see 4 panes in the layout. You should see that
 3. Environment and History - the upper right pane. It shows the currently loaded data files and values, and command history.
 4. Miscellaneous - the lower right pane. It contains most important tabs, which are Files, Plots, Packages, Help and Viewer. It list file names, show plots, show packages, display help document and view outputs.
 
-<img>
+![Panes in RStudio](img/panes.jpg)
+
+## Functions and objects
+Before we start, there are a number of basics to understand the syntax in R. These are functions and objects.
+
+### Functions
+R commands are in form of `function()`. You can think of MS Excel function. Inside a function, there will be a number of options. We will see this as we go through the examples later.
+
+### Objects
+Object is a sort of like container. You assign an object by giving it a name on left side of `<-` or `=`. For the sake of consistency, we will use `<-` throughout, although `=` is perfectly fine (some might argue about this though).
+# - variable, data (data frame, matrix, list)
+```{r}
+x <- 1
+y = 2
+z <- x + y
+z  # type object name, you'll get the value
+```
+But later you will see that `=` is used to set values for options of a function, i.e. inside the bracket after the function's name. For example, `function(option1 = value, option2 = value, ...)`. Thus, some prefer using `<-` to avoid confusion with `=` for options.
 
 
 ## Working with packages
@@ -147,26 +158,27 @@ or in Mac OS/Linux
 setwd("~/myfolder")
 ```
 
+
 ## Data management
 This section is concerned with reading data from dataset and displaying data.
 
 ### Reading data set
 Easiest is to read .csv file,
 ```{r}
-data = read.csv("cholest.csv")
+data <- read.csv("cholest.csv")
 ```
 
 For SPSS and STATA files, we need `foreign` package,
 ```{r, eval=FALSE}
 library("foreign")
-data = read.spss("cholest.sav", as.data.frame = TRUE)
-data = read.dta("cholest.dta", convert.factors = TRUE)
+data <- read.spss("cholest.sav", as.data.frame = TRUE)
+data <- read.dta("cholest.dta", convert.factors = TRUE)
 ```
 
 For Excel file, we need `readxl` package,
 ```{r eval=FALSE}
 library("readxl")
-data = read_excel("cholest.xlsx", sheet = 1)
+data <- read_excel("cholest.xlsx", sheet = 1)
 ```
 
 ### Viewing data set
@@ -215,7 +227,7 @@ In this section, we will deal with more advanced data management (subsetting, re
 
 Let say we use `cholest.csv`,
 ```{r}
-data = read.csv("cholest.csv")
+data <- read.csv("cholest.csv")
 dim(data)
 str(data)
 names(data)
@@ -317,7 +329,7 @@ table(data$age_cat)
 Only one observation labeled as `> 50`. We want to combine `40-49` with `> 50`.
 ```{r}
 library(car)
-data$age_cat1 = recode(data$age_cat, "c('40-49','> 50') = '40 & above'")
+data$age_cat1 <- recode(data$age_cat, "c('40-49','> 50') = '40 & above'")
 table(data$age_cat1)  # combined
 ```
 
@@ -337,7 +349,7 @@ ID | Group | BMI |
 6 | Thin | 18 |
 
 ```{r}
-data_frame = read.table(header = TRUE, text = "
+data_frame <- read.table(header = TRUE, text = "
 ID Group BMI
 1 Fat 30
 2 Fat 31
@@ -358,12 +370,12 @@ or a table,
 | Non-smoker | 5 | 100
 
 ```{r}
-data_table = read.table(header = FALSE, text = "
+data_table <- read.table(header = FALSE, text = "
 80 10
 5 100
                         ")
-colnames(data_table) = cancer = c("Cancer", "No Cancer")
-rownames(data_table) = c("Smoker", "Non-smoker")
+colnames(data_table) <- cancer <- c("Cancer", "No Cancer")
+rownames(data_table) <- c("Smoker", "Non-smoker")
 str(data_table)  # still a data frame, but laid out in form of a table.
 data_table
 ```
