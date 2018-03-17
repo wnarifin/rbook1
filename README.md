@@ -7,3 +7,4 @@ Objectives:
 - descriptive stats
 - graphical exploration
 - presenting results
+- full practicals
