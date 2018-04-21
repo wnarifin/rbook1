@@ -16,3 +16,8 @@ fontfamily: mathpazo
 geometry: margin=1in
 description: "Exploring data using R"
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, strip.white = TRUE, message = FALSE, error = FALSE)
+knitr::opts_chunk$set(out.width = "70%", fig.align = "center")
+```
