@@ -4,29 +4,9 @@ output:
 ---
 
 # Descriptive statistics
-In this chapter, we will go through a number of R functions for basic statistics. The focus will be on the results that are presented in form of numbers in text or tables (textual). We will mostly use the builtin functions (from R standard library). Extra packages will be introduced whenever necessary.
+In this chapter, we will learn how to obtain a number of important descriptive statistics. The statistics will be obtained based on the variable types and groups. We will also learn how to perform cross-tabulation.
 
-## Preliminaries
-In this part, we are going to use the functions as applied to a variable. For this purpose, we are going to use builtin datasets in R. You can view the available datasets by
-```{r}
-data()
-```
-
-```
-## Data sets in package ‘datasets’:
-
-## AirPassengers                     Monthly Airline Passenger Numbers 1949-1960
-## BJsales                           Sales Data with Leading Indicator
-## BJsales.lead (BJsales)            Sales Data with Leading Indicator
-## BOD                               Biochemical Oxygen Demand
-## CO2                               Carbon Dioxide Uptake in Grass Plants
-## ...
-```
-We can view any dataset description by appending "?" to the dataset name. For example,
-```{r}
-?chickwts
-```
-
+## Exploring the dataset
 We will start by using `chickwts` dataset that contains both numerical (`weight`) and categorical (`feed`) variables. We can view the first six observations,
 ```{r}
 head(chickwts)
@@ -133,16 +113,16 @@ prop.table(table(chickwts$feed))*100
 ```
 To view the count and the percentage together, we can use `cbind`,
 ```{r}
-cbind(n = table(chickwts$feed), "%" = prop.table(table(chickwts$feed))*100)
+cbind(n = table(chickwts$feed), 
+      "%" = prop.table(table(chickwts$feed))*100)
 ```
 We need the quotation marks " " around the percentage sign %, because % also serves as a mathematical operator in R.
-
 
 ## Two variables and more
 Just now, we viewed all the statistics as applied to a variable. In this part, we are going to view the statistics on a number of variables. This includes viewing a group of numerical variables or categorical variables, or a mixture of numerical and categorical variables. This is relevant in a sense that, most of the time, we want to view everything in one go (e.g. the statistics of all items in a questionnaire), compare the means of several groups and obtain cross-tabulation of categorical variables.
 
 ### Numerical variables
-Let us use `women` dataset,
+Let us use `women` dataset and explore the dataset,
 ```{r}
 head(women)
 names(women)
@@ -172,9 +152,13 @@ We notice that `induced`, `case` and `spontaneous` are not yet set as categorica
 ```
 We label the values in the variables according to the description as
 ```{r}
-infert$induced <- factor(infert$induced, levels = 0:2, labels = c("0", "1", "2 or more"))
-infert$case <- factor(infert$case, levels = 0:1, labels = c("control", "case"))
-infert$spontaneous <- factor(infert$spontaneous, levels = 0:2, labels = c("0", "1", "2 or more"))
+infert$induced <- factor(infert$induced, levels = 0:2, 
+                         labels = c("0", "1", "2 or more"))
+infert$case <- factor(infert$case, levels = 0:1, 
+                      labels = c("control", "case"))
+infert$spontaneous <- factor(infert$spontaneous, 
+                             levels = 0:2, 
+                             labels = c("0", "1", "2 or more"))
 str(infert)
 ```
 and we now all these variables are turned into factors.
@@ -200,8 +184,10 @@ function(x) summary(x)/length(x)
 
 Now, since we already learned about `lapply`, we may also obtain the same results by using `summary` (within `lapply`), `table` and `prop.table`.
 ```{r}
-lapply(infert[c("education", "induced", "case", "spontaneous")], summary)
-lapply(infert[c("education", "induced", "case", "spontaneous")], table)
+lapply(infert[c("education", "induced", "case", "spontaneous")], 
+       summary)
+lapply(infert[c("education", "induced", "case", "spontaneous")], 
+       table)
 lapply(infert[c("education", "induced", "case", "spontaneous")], 
        function(x) prop.table(table(x)))
 lapply(infert[c("education", "induced", "case", "spontaneous")], 
@@ -227,13 +213,16 @@ which gives us an identical result.
 
 If you want to obtain results using the basic functions (i.e. `mean`, `median`, `quantile`, `IQR` and `mad`), you need to use `lappy` within `by`, because they could not handle many variables, for example for `mean` and `IQR`,
 ```{r}
-by(infert[c("age", "parity")], infert$case, function(x) lapply(x, mean))
-by(infert[c("age", "parity")], infert$case, function(x) lapply(x, IQR))
+by(infert[c("age", "parity")], infert$case, 
+   function(x) lapply(x, mean))
+by(infert[c("age", "parity")], infert$case, 
+   function(x) lapply(x, IQR))
 ```
 
 For categorical variables, using `summary`
 ```{r}
-by(infert[c("education", "induced", "spontaneous")], infert$case, summary)
+by(infert[c("education", "induced", "spontaneous")], infert$case, 
+   summary)
 by(infert[c("education", "induced", "spontaneous")], infert$case, 
    function(x) lapply(x, function(x) summary(x)/length(x)))
 by(infert[c("education", "induced", "spontaneous")], infert$case, 
@@ -261,7 +250,8 @@ table(education = infert$education, case = infert$case)
 ```
 Since we are familiar with the powerful `lappy`, we can use it to get cross-tabulation of all of the factors with `case` status,
 ```{r}
-lapply(infert[c("education", "induced", "spontaneous")], function(x) table(x, infert$case))
+lapply(infert[c("education", "induced", "spontaneous")], 
+       function(x) table(x, infert$case))
 ```
 We may also view subgroup counts (nesting). Here, the cross-tabulation of `education` and `case` is nested within `induced`
 ```{r}
@@ -273,4 +263,6 @@ by(infert[c("education", "case")], infert$induced, table)
 ```
 
 ## Summary
-In this chapter, we learned about how to handle numerical and categorical variables and obtain the basic and relevant statistics. In the next chapter, we are going to learn about how to explore the variables visually in form of the relevant graphs and plots.
+In this chapter, we learned about how to handle numerical and categorical variables and obtain the basic and relevant descriptive statistics.
+
+In the next chapter, we are going to learn about how to explore the variables visually in form of the relevant graphs and plots.
