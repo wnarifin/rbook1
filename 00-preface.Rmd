@@ -1,0 +1,15 @@
+---
+output:
+  pdf_document: default
+---
+
+# Preface {-}
+This is a book on data exploration using R. The focus of this book is mainly on the basics of R, data entry and management, descriptive statistics and graphical exploration of the data.
+
+We did not cover basic statistical analyses, for examples t-test and chi-squared test, to focus on the basics in data exploration. By limiting the scope to data exploration, we can cover this aspect of handling data in greater details.
+
+We also include a chapter on combining outputs for data presentation and also some packages that provide nice looking ready-made tables. To end this book, we provide more examples using a number of selected datasets, covering the data exploration skills from the preceding chapters.
+
+All in all, we hope you enjoy this book!
+
+#### Kamarul Imran Musa, Wan Nor Arifin {-}

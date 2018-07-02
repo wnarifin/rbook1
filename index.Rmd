@@ -1,23 +1,29 @@
 ---
 title: "Exploring data using R"
 author: "Kamarul Imran Musa, Wan Nor Arifin"
-date: '`r format(Sys.time(), "%B %d, %Y")`'
+date: '`r paste0("Draft updated ", format(Sys.time(), "%d %B %Y"))`'
 site: bookdown::bookdown_site
 output:
   bookdown::pdf_book:
     keep_tex: no
 documentclass: book
-bibliography: book.bib
+bibliography:
+  - book.bib
+  - skeleton.bib
 csl: apa.csl
 nocite: '@*'
 link-citations: yes
-fontsize: 11pt
-fontfamily: mathpazo
+fontsize: 12pt
+fontfamily: times
 geometry: margin=1in
-description: "Exploring data using R"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, strip.white = TRUE, message = FALSE, error = FALSE)
 knitr::opts_chunk$set(out.width = "70%", fig.align = "center")
+```
+
+```{r bib, include=FALSE}
+# create a bib file for the R packages used in this document
+knitr::write_bib(c('car', 'psych'), file = 'skeleton.bib')
 ```
