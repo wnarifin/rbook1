@@ -1,15 +1,10 @@
 ---
-title: "Graphical"
-author: "Kamarul Imran Musa"
-date: "April 13, 2018"
-output: pdf_document
+output:
+  pdf_document: default
 ---
 
-\newpage
-
-```{r, echo=FALSE}
-knitr::opts_chunk$set(out.width = '70%' , fig.align = 'center') 
-```
+# Visual exploration
+<!-- elaborate here, i.e. introduction to chapter -->
 
 ## Introduction to visualization
 
@@ -19,19 +14,18 @@ This means "information that has been abstracted in some schematic form, includi
 
 For complete references, read these sources:  
 
-1.  Link 1 <https://en.m.wikipedia.org/wiki/Data_visualization>
-2.  Link 2 <https://en.m.wikipedia.org/wiki/Michael_Friendly>  
+1.  <https://en.m.wikipedia.org/wiki/Data_visualization>
+2.  <https://en.m.wikipedia.org/wiki/Michael_Friendly>  
 
-## History of data visualization
+### History of data visualization
 
-in his 1983 book **The Visual Display of Quantitative Information**, the author Edward Tufte defines **graphical displays** and principles for effective graphical display. The book defines **Excellence in statistical graphics consists of complex ideas communicated with clarity, precision and efficiency.**
+In his 1983 book **The Visual Display of Quantitative Information**, the author Edward Tufte defines **graphical displays** and principles for effective graphical display. The book defines **Excellence in statistical graphics consists of complex ideas communicated with clarity, precision and efficiency.**
 
-## Processes and Objectives of visualization
+### Processes and objectives of visualization
 
-Visualization is the process of  representing data graphically and  interacting with these representations. The main objective is to gain insight into the data (Reference: <http://researcher.watson.ibm.com/researcher/view_group.php?id=143>
+Visualization is the process of representing data graphically and  interacting with these representations. The main objective is to gain insight into the data (<http://researcher.watson.ibm.com/researcher/view_group.php?id=143>)
 
-## What makes good graphics
-
+### What makes good graphics
 
 You may require these to make good graphics:
 
@@ -44,6 +38,7 @@ You may require these to make good graphics:
 7.  Reveal the data at several levels of detail, from a broad overview to the fine structure
 8.  Serve a reasonably clear purpose: description, exploration, tabulation or decoration
 9.  Be closely integrated with the statistical and verbal descriptions of a data set.
+
 
 ## Graphics packages in R
 
@@ -61,6 +56,7 @@ Some examples of other more specific packages aimed to run graphics for certain 
 2.  **sjPlot** to plot mixed models results
 
 
+<!-- suggest remove this part onwards, can be moved to chapter 1
 ## Preparation
 
 ### Set the working directory
@@ -87,14 +83,16 @@ Data from databases are less common but are getting more important and more comm
 2.  SQLite
 3.  Postgresql
 4.  Mariadb
+remove -->
 
-## Practice data
 
-We will be using a dataset named `cholest1.dta` which is in Stata format. 
+## Preliminaries
+
+We will be using a dataset named `cholest.dta` which is in Stata format. 
 
 ```{r}
 library(haven)
-cholest <- read_dta('cholest1.dta')
+cholest <- read_dta('cholest.dta')
 cholest
 ```
 
@@ -110,6 +108,7 @@ From variable **sex**, we will create a variable named **male** and label female
 cholest$male <- factor(cholest$sex, labels = c('female', 'male'))
 ```
 
+
 ## Questions to ask before making graphs
 
 You must ask yourselves these:
@@ -124,17 +123,18 @@ You must ask yourselves these:
 - three variables together?
 
 
-# Using the **graphics** package
+## Using the **graphics** package
 
 For this and the rest of the hands-ons, we will be using the built-in datasets. Later, you can practice using your own datasets. So, make sure you are good at calling data into R. That means, familiarize yourself with data importing packages such as **haven**, **foreign** and **readxl**.  
 
-## One variable: Plotting a categorical variable
+### One variable: Plotting a categorical variable
 
-For this part, most contents are taken from this website <http://www.statmethods.net/graphs/density.html>
+<!-- no need
+For this part, most contents are taken from this website <http://www.statmethods.net/graphs/density.html> -->
 
 For categorical variable, we can plot a **barchart** to display the frequencies of the data.
 
-Let us see the frequencies of cars based on different `gear` 
+<!-- Let us see the frequencies of cars based on different `gear`-->
 
 Create a frequency table and name as `count`:
 
@@ -151,11 +151,11 @@ barplot(counts, main="Male and Female Distribution",
 ```
 
 
-## One variable: Plotting a numerical variable
+### One variable: Plotting a numerical variable
 
 A common graphic for numerical variable is a histogram
 
-### Histogram
+### Histogram {-}
 
 We create histograms with the function `hist(x)`. In the function, 
 
@@ -163,7 +163,6 @@ We create histograms with the function `hist(x)`. In the function,
 2.  the argument option `freq=FALSE` plots probability densities instead of frequencies. 
 3.  the argument option `breaks=` controls the number of bins.
  
-
 ```{r}
 hist(cholest$chol)
 ```
@@ -180,7 +179,7 @@ hist(cholest$chol, breaks = 14, col = "red",
      main = "Cholesterol (mmol/l) distribution", xlab = "Cholesterol (mmol/l)")
 ```
 
-### Kernel density plot
+### Kernel density plot {-}
 
 Kernal density plots are usually a much more effective way to view the distribution of a variable. 
 
@@ -196,11 +195,11 @@ d.plot <- density(cholest$chol, na.rm = TRUE) # returns the density data
 plot(d.plot, main = "Kernel Density of Serum Cholesterol") # plots the results
 ```
 
-## Two variables : Plotting a numerical with another numerical variable
+### Two variables: Plotting a numerical with another numerical variable
 
 We can plot two numerical variables simultenously. From such plot, we can see the association or relationship between the two variables.  
 
-### Scatterplot
+### Scatterplot {-}
 
 Scatterplot is one of the most common plots to display the association between 2 numerical variables.
 
@@ -209,23 +208,22 @@ plot(cholest$chol, cholest$age, main = "Scatterplot",
   	xlab = "Cholesterol", ylab = "Age", pch=19)
 ```
 
-You can always personalize the graphical parameters such as parameters for Fonts, Colours, Lines and Symbols. Not enough time to go through one by one. Can try on your own by visiting this link <http://www.statmethods.net/advgraphs/parameters.html>
+You can always personalize the graphical parameters such as parameters for _Fonts, Colours, Lines_ and _Symbols_. Can try on your own in this website <http://www.statmethods.net/advgraphs/parameters.html>
 
-# Using the **ggplot2** package
 
-The official website for ggplot2 is here <http://ggplot2.org/>.
+## Using the **ggplot2** package
+
+The official website for ggplot2 is here <http://ggplot2.org/>. In their own words, the package is described as
 
 *ggplot2 is a plotting system for R, based on the grammar of graphics, which tries to take the good parts of base and lattice graphics and none of the bad parts. It takes care of many of the fiddly details that make plotting a hassle (like drawing legends) as well as providing a powerful model of graphics that makes it easy to produce complex multi-layered graphics.*
 
-Ref : <http://ggplot2.org/> 
-
-## One variable: Plotting a numerical variable
+### One variable: Plotting a numerical variable
 
 Plot distribution of values of a numerical variable
 
-### Histogram
+### Histogram {-}
 
-Parts of the notes come from <http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/>
+<!-- Parts of the notes come from <http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/> -->
 
 To demonstrate, let us create an artificial dataset. Follow these steps: 
 
@@ -253,7 +251,7 @@ ggplot(cholest, aes(x = chol)) + geom_histogram(binwidth = 0.5,
                                                 colour = "black", fill = "white")
 ```
 
-### Density curve
+### Density curve {-}
 
 Density is useful to examine the distribution of observations.
 
@@ -280,7 +278,8 @@ ggplot(data = subset(cholest, !is.na(chol)), aes(x = chol)) +
     geom_density(alpha = .2, fill = "#FF6666")
 ```
 
-## One variable: Plotting a categorical variable
+
+### One variable: Plotting a categorical variable
 
 Now, let us create a basic barchart using `ggplot2::geom_bar()`
 
@@ -305,7 +304,8 @@ ggplot(data = cholest, mapping = aes(male, fill = male)) +
 
 Excellent resource from this website <http://www.cookbook-r.com/Graphs/Bar_and_line_graphs_(ggplot2)/>
 
-## Two variables: Plotting a numerical and a categorical variable
+
+### Two variables: Plotting a numerical and a categorical variable
 
 Now, examine the distribution of a numerical variable (**rating**) in two groups (A and B) of the variable **cond** by 
 
@@ -313,7 +313,7 @@ Now, examine the distribution of a numerical variable (**rating**) in two groups
 2.  interleaving two histograms
 3.  overlaying two density curve
 
-### Overlaying histograms
+### Overlaying histograms {-}
 
 ```{r}
 
@@ -321,7 +321,7 @@ ggplot(cholest, aes(x = chol, fill = male)) +
     geom_histogram(binwidth = .5, alpha = .5, position = "identity")
 ```
 
-### Interleaving histograms
+### Interleaving histograms {-}
 
 ```{r}
 ggplot(cholest, aes(x = chol, fill = male)) +
@@ -329,7 +329,7 @@ ggplot(cholest, aes(x = chol, fill = male)) +
   
 ```
 
-### Overlaying density plots
+### Overlaying density plots {-}
 
 Full transparent
 
@@ -344,7 +344,7 @@ Now, try set the transparency at $30\%$
 ggplot(cholest, aes(x = chol, colour = male)) + geom_density(alpha = .3)
 ```
 
-### Using facets
+### Using facets {-}
 
 we use `facet_grid()` to split the plot.
 
@@ -369,7 +369,7 @@ ggplot(data = subset(cholest, !is.na(chol)), aes(x = chol)) + geom_histogram(bin
     facet_grid(. ~ male)
 ```
 
-## Saving plots in ggplot2
+### Saving plots in ggplot2
 
 This will save the last plot created
 
@@ -379,52 +379,41 @@ ggsave("myhistogram.jpg", width = 5, height = 5)
 ```
 
 
-
+<!-- do not include, focus on basic skills
 ## Plotting two or more categorical variables
 
 Unfortunately, not enough time to cover that. But you can refer to this excellent website <http://www.cookbook-r.com/Graphs/Bar_and_line_graphs_(ggplot2)/> . It has many examples of plots and how you can construct them 
+-->
 
-# Using the  **lattice** package
+
+## **lattice** package
 
 **lattice** package can create beautiful plots too. A very useful vignette for *lattice* package can be found here <http://lattice.r-forge.r-project.org/Vignettes/src/lattice-intro/lattice-intro.pdf>
 
-## Data and package
 
-### Data 
-
-View
-
-```{r}
-cholest
-```
-
-
-## Loading the **lattice** package 
-
-To use **lattice** package, we first load the package using `library()`
+### Loading the **lattice** package 
 
 ```{r}
 
 library(lattice)
 ```
 
-## One numerical variable - Plotting a histogram 
+### One numerical variable: Plotting a histogram
 
-Plot a histogram for variable `gcsescore` and label the x axis
+Plot a histogram for variable `chol` and label the x axis
 
 ```{r}
 histogram(~ chol, data = cholest, xlab = 'Cholesterol level')
 ```
 
-### One numerical and one categorical variable - Plotting histograms
+### One numerical and one categorical variable: Plotting histograms
 
 ```{r}
 histogram(~ chol | male, data = cholest,
           xlab = 'Cholesterol level' )
 ```
 
-### One categorical variable - Plotting a barchart
-
+### One categorical variable: Plotting a barchart
 
 1.  use `barchart()` 
 2.  dependent variable = agegrp
@@ -439,122 +428,5 @@ Now we change the variables for the x and y axes and also the column and row arr
 
 ```{r}
 barchart(male ~ chol | factor(categ), data = cholest, layout = c(1, 3))
-```
-
-# Using the  **plotly** package
-
-Plotly's R graphing library makes interactive, publication-quality graphs online.
-
-Reference : <https://plot.ly/r/>
-
-Quite a big package. Needs **tidyr** package
-
-```{r}
-#install.packages('plotly')
-#install.packages('tidyr')
-library(plotly)
-```
-
-## Scatterplot
-
-We will use `diamond` dataset as training data.
-
-Below, what we do:
-
-1.  select 1000 samples by random sampling
-2.  create a scatter plot
-
-```{r}
-set.seed(100)
-d <- diamonds[sample(nrow(diamonds), 1000), ]
-plot_ly(d, x = ~ carat, y = ~ price, color = ~ carat,
-        size = ~ carat, text = ~ paste("Clarity: ", clarity))
-```
-
-
-# Take-home Exercise
-
-## **ggplot2** package
-
-Very nice tutorial here <http://r-statistics.co/Complete-Ggplot2-Tutorial-Part1-With-R-Code.html>
-
-```{r}
-library(ggplot2)
-dim(diamonds)
-diam2 <-  diamonds[sample(1:nrow(diamonds), 1000, replace = TRUE),]
-```
-
-```{r}
-ggplot(diam2, aes(x=carat, y=price, color=cut)) + geom_point() + geom_smooth()
-```
-
-```{r}
-gg <- ggplot(diam2, aes(x = carat, y = price, color = cut)) + 
-  geom_point() + labs(title = "Scatterplot using Price and Carat",
-                      x = "Carat", y = "Price")  
-print(gg)
-```
-
-## **lattice** package
-
-### Density plot
-
-```{r}
-densityplot(~ mpg, data = mtcars)
-densityplot(~ mpg | factor(gear),  main="Density Plot by Number of Cylinders", 
-            xlab="Miles per Gallon", data = mtcars)
-```
-
-### Box whisker plot
-
-```{r}
-bwplot(factor(cyl) ~ mpg | factor(gear), ylab = "Cylinders", xlab = "Miles per Gallon", 
-       main = "Mileage by Cylinders and Gears", layout=(c(1,3)),
-       data = mtcars)
-```
-
-### Scatterplot
-
-```{r}
-xyplot(mpg~wt| factor(cyl)  * factor(gear), main="Scatterplots by Cylinders and Gears", 
-       ylab="Miles per Gallon", xlab="Car Weight", 
-       data = mtcars)
-```
-
-### Matrix scatterplot
-
-For numerical variables
-
-```{r}
-splom(mtcars[c(1,3,4,5,6)], main="MTCARS Data")
-
-```
-
-
-## Saving plot
-
-Save the last plot with size 20 cm width and 20 cm height in
-
-1.  pdf format
-2.  png format
-3.  jpg with default dpi
-4.  jpg with 400 dpi
-
-```{r}
-ggsave("matrix.pdf", width = 20, height = 20, units = "cm")
-ggsave("matrix.png", width = 20, height = 20, 
-       units = "cm")
-ggsave("matrix.jpg", width = 20, height = 20, 
-       units = "cm")
-ggsave("matrix2.jpg", width = 20, height = 20, 
-       units = "cm", dpi = 400)
-
-```
-
-
-# Environment
-
-```{r}
-sessionInfo()
 ```
 

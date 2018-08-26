@@ -1,0 +1,285 @@
+---
+title: "Exploring data using R"
+author: "Kamarul Imran Musa, Wan Nor Arifin"
+date: '`r format(Sys.time(), "%B %d, %Y")`'
+site: bookdown::bookdown_site
+output:
+  bookdown::pdf_book:
+    keep_tex: no
+documentclass: book
+bibliography: book.bib
+csl: apa.csl
+nocite: '@*'
+link-citations: yes
+fontsize: 11pt
+fontfamily: mathpazo
+geometry: margin=1in
+description: "Exploring data using R"
+---
+---
+title: "Exploring data using R"
+author: "Kamarul Imran Musa, Wan Nor Arifin"
+date: '`r format(Sys.time(), "%B %d, %Y")`'
+site: bookdown::bookdown_site
+output:
+  bookdown::pdf_book:
+    keep_tex: no
+documentclass: book
+bibliography: book.bib
+csl: apa.csl
+nocite: '@*'
+link-citations: yes
+fontsize: 11pt
+fontfamily: mathpazo
+geometry: margin=1in
+description: "Exploring data using R"
+---
+
+<!--chapter:end:index.Rmd-->
+
+
+# Introduction to R
+
+Placeholder
+
+
+## R and RStudio
+### Installation of R
+### Starting R
+### Installation of RStudio
+#### Starting RStudio
+#### Why RStudio?
+#### RStudio interface
+## Functions and objects
+### Functions
+### Objects
+## Working with packages
+### About packages 
+### Package installation
+### Loading packages
+## Working directory
+### Setting a working directory
+## Data management
+### Reading data set
+### Viewing data set
+### Exporting data set from R
+## More about data management
+### Subsetting
+#### Selecting a column (variable) or a row (observation)
+#### Selecting columns
+#### Selecting rows
+#### Select rows and columns together
+#### Creating a new variable
+### Recoding
+### Categorize into new variables
+#### From a numerical variable
+#### From a categorical variable
+### Direct data entry
+## Summary
+
+<!--chapter:end:01-intro.Rmd-->
+
+
+# Descriptive statistics
+
+Placeholder
+
+
+## Preliminaries
+## Data sets in package ‘datasets’:
+## AirPassengers                     Monthly Airline Passenger Numbers 1949-1960
+## BJsales                           Sales Data with Leading Indicator
+## BJsales.lead (BJsales)            Sales Data with Leading Indicator
+## BOD                               Biochemical Oxygen Demand
+## CO2                               Carbon Dioxide Uptake in Grass Plants
+## ...
+## One variable
+### A numerical variable
+### A categorical variable
+## Two variables and more
+### Numerical variables
+### Categorical variables
+## Groups and cross-tabulations
+### By groups
+### Cross-tabulation
+## Summary
+
+<!--chapter:end:02-text.Rmd-->
+
+---
+output:
+  pdf_document: default
+---
+
+# Visual exploration
+[elaborate here]
+In this chapter, we will explore the data visually by plots. In plotting the data, you must ask yourselves these:
+
+1.  Which variable do you want to plot?
+2.  What is the type of that variable? Factor? Numerical?
+3.  Are you going to plot another variable together?
+
+## Preliminaries
+
+### Reading dataset
+We will use `qol.sav` dataset in this chapter. Create an object namely `dataSPSS` to the data read into R.  
+```{r}
+library(foreign)
+dataSPSS <- read.spss('qol.sav', to.data.frame = TRUE)
+```
+
+### Describing data
+Let us examine the data
+```{r}
+str(dataSPSS)
+```
+
+Now, let us summarize our data
+```{r}
+summary(dataSPSS)
+```
+
+## One variable
+
+### A categorical variable
+We can create a simple barchart
+```{r}
+dist.sex<-table(dataSPSS$sex)
+barplot(dist.sex,
+        main='Sex distribution',
+        xlab='Sex')
+```
+
+### A numerical variable
+Histogram
+```{r}
+hist(dataSPSS$age, main = 'Age',
+     xlab = 'Age in years',
+     ylab = 'Count')
+```
+
+## Two variables
+### A numerical with another numerical variable
+We will use `scatterplot` to plot 
+```{r}
+plot(dataSPSS$tahundx, dataSPSS$age,
+     main = 'Duration having DM VS age',
+     xlab = 'Duration of DM', ylab = 'Age',
+     pch = 19)
+```
+
+Let us make a fit line
+```{r}
+plot(dataSPSS$tahundx, dataSPSS$age,
+     main = 'Duration having DM VS age',
+     xlab = 'Duration of DM', ylab = 'Age',
+     pch = 19)
+abline(lm(dataSPSS$age~dataSPSS$tahundx), col = 'red')
+```
+
+and a lowess 
+```{r}
+plot(dataSPSS$tahundx, dataSPSS$age,
+     main = 'Duration having DM VS age',
+     xlab = 'Duration of DM', ylab = 'Age',
+     pch = 19)
+lines(lowess(dataSPSS$tahundx,dataSPSS$age), col = 'blue')
+```
+
+### A categorical variable with a categorical variable
+Now, we will plot 2 categorical variables simultanenously. First, we will use stacked barchart
+```{r}
+compl.sex<-table(dataSPSS$complica,dataSPSS$sex)
+compl.sex
+barplot(compl.sex,
+        main='Complications by sex',
+        xlab='Sex',
+        col=c('blue','red'),
+        legend=c('No','Yes'))
+```
+
+Next, we will use grouped barchart
+```{r}
+compl.sex
+barplot(compl.sex,
+        main = 'Complications according to sex',
+        xlab = 'Sex',
+        col = c('blue','red'),
+        legend = c('no','yes'),
+        beside = TRUE)
+```
+
+## Multiple plots in one go
+Here we will use some tricks, to show multiple plots in one go.
+```{r}
+dataSPSS.4 <- dataSPSS[,c("age", "hba1c", "fbs", "choleste")]
+par(mfrow = c(2, 2))  # two rows and two columns
+mapply(hist, dataSPSS.4)  # not nice, no proper labels
+mapply(hist, dataSPSS.4,
+       main = paste("Histogram of ", colnames(dataSPSS.4)), 
+       xlab = colnames(dataSPSS.4))  # nice with labels
+par(mfrow = c(1, 1))  # reset back to only one plot per view
+```
+As you can see, we used `paste`. We will learn more about `paste` later.
+
+
+## Summary
+[summary here]
+
+<!--chapter:end:03-graphical.Rmd-->
+
+---
+output:
+  pdf_document: default
+---
+
+# Reporting results
+In this chapter, we will learn how to combine bits and parts of your results into custom-made texts, labels and tables. This will be useful for reporting and summarizing your results for publication, as well as labeling specific axes on your plots. There are a number of ways to achieve this. We will do this by basic functions and packages.
+
+## `cbind` and `data.frame`
+
+
+## `paste` and `paste0`
+
+
+## `kable`
+
+
+## `stargazer`
+
+<!--chapter:end:04-report.Rmd-->
+
+---
+output:
+  pdf_document: default
+---
+
+# Practicals
+In this chapter, using a number of additional data sets, we will conduct full exploration of the data from data description, descriptive statistics, plots and reporting.
+
+## data 1
+
+
+## data 2
+
+
+## data 3
+
+
+## Summary
+[summary here]
+
+<!--chapter:end:05-examples.Rmd-->
+
+---
+output:
+  pdf_document: default
+  html_document:
+    keep_md: no
+---
+
+# References
+
+
+<!--chapter:end:06-references.Rmd-->
+
