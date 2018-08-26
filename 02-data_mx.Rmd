@@ -1,0 +1,402 @@
+---
+output:
+  pdf_document: default
+---
+
+# Data management
+In this chapter, we will learn how to deal with data in R. We will learn how load, view and export data. We will also learn about selecting subsamples from the data and editing the data (creating new variables, recoding). The basics of direct data entry for tables will also be introduced.
+
+## Reading, viewing and exporting data
+
+### The datasets
+For the purpose of doing analysis in this chapter and the rest of this book, you can download the datasets from <https://wnarifin.github.io/>.
+
+### Reading dataset
+The easiest way to read a dataset into R is from .csv file,
+```{r}
+data <- read.csv("cholest.csv")
+```
+
+For SPSS and STATA files, we need `foreign` package,
+```{r, eval=FALSE}
+library("foreign")
+data <- read.spss("cholest.sav", to.data.frame = TRUE)
+data <- read.dta("cholest.dta", convert.factors = TRUE)
+```
+
+For Excel file, we need `readxl` package,
+```{r eval=FALSE}
+library("readxl")
+data <- read_excel("cholest.xlsx", sheet = 1)
+```
+
+### Viewing dataset
+This is very easy in R, just type the name,
+```{r, eval=FALSE}
+data
+```
+
+For a nicer view of the dataset, using `View()`
+```{r, eval=FALSE}
+View(data)
+```
+
+We can also view only the first six observations,
+```{r}
+head(data)
+```
+and the last six observations.
+```{r}
+tail(data)
+```
+
+We can view the dimension of the data (row and column),
+```{r}
+dim(data)
+```
+Here, we have 80 rows (observations) and 5 columns (variables).
+
+Next, view the names of the five variables,
+```{r}
+names(data)
+```
+
+Using `str`, in one go we can view these details of the data,
+```{r}
+str(data)
+```
+
+### Exporting dataset from R
+You can also export data into various formats using these packages.
+
+For example, 
+
+1.  to export data into a *comma separated version* (.csv) file, we can use `write.csv` function. 
+2.  to export data into stata format, we can use `write.dta` function
+
+```{r, eval=FALSE}
+write.csv(data, 'data.csv')
+write.dta(data, 'data.dta') 
+```
+
+## Data structure
+To complete undestand the output from `str()` of `data`, there are several basics that we must understand; the data types and the containers.
+
+### Variable types
+Again, from
+```{r}
+str(data)
+```
+you will notice `num` and `Factor`. These represent the variable types:
+
+- num = numerical variable.
+- Factor = categorical variable.
+
+Each column/variable in R is a vector, which is a collection of values of the same type. You can create the vectors as follows (pay attention to the variable type):
+```{r}
+data_num = c(1,2,3,4,5); str(data_num)
+data_cat = factor( c("M", "F", "M", "F", "M") ); str(data_cat)
+```
+You may use `;` to write two lines of short codes into one line.
+
+There are several more types of vectors, but knowing these two are sufficient for starter. You can view other types from help,
+```{r}
+?typeof
+```
+
+### Containers
+Based on `str(data)`, we notice that our `data` is a data frame (`data.frame`). Basic containers that we usually use are data frame, list and matrix. These can be easily understood by examples below (utilizing our recently created vectors `data_num` and `data_cat`).
+
+### Data frame {-}
+```{r}
+data.frame(data_num, data_cat)
+data_frame = data.frame(data_num, data_cat); str(data_frame)
+```
+
+### List {-}
+```{r}
+list(data_num, data_cat)
+data_list = list(data_num, data_cat); str(data_list)
+```
+
+### Matrix {-}
+```{r}
+matrix(data = c(data_num, data_cat), nrow = 5, ncol = 2)
+data_matrix = matrix(data = c(data_num, data_cat), nrow = 5, 
+                     ncol = 2)
+data_matrix
+str(data_matrix)  # shown as numerical for both
+```
+When vectors are combined in a matrix, the factor will be turned into numeric. Matrix can only contain one type of variable only. Contrast this to list.
+
+You may have a look at array `?array` and table `?table`.
+
+## Subsetting
+Subsetting means "selecting parts of data". It allows selecting only a number of variables (columns) or observations (rows) from a dataframe. There are ways to do that. Basically, we can use
+
+- `$` sign.
+- `[ , ]` square brackets.
+- `subset()`.
+
+Let us use `cholest.sav` dataset,
+```{r}
+library(foreign)  # to use `read.spss`
+data <- read.spss("cholest.sav", to.data.frame = TRUE)
+dim(data)
+str(data)
+names(data)
+head(data)
+tail(data)
+```
+
+### Selecting a column (variable) or a row (observation)
+Let say, to select `age`, which is the second variable, first using `$`
+```{r}
+data$age
+```
+and column/variable number,
+```{r}
+data[ , 2]
+```
+and using the name within `[]`,
+```{r}
+data[ , "age"]
+```
+Please keep in mind, the name is case sensitive. Thus make sure the spelling and capitalization are correct.
+
+Then, to select the seventh observation,
+```{r}
+data[7, ]
+```
+
+We can also choose a specific combination of row and column, let say the 73rd and `age`,
+```{r}
+data[73, 2]
+data[73, "age"]
+```
+
+### Selecting columns and rows
+Let us select `chol`, `age` and `sex`. We can use also square brackets
+```{r}
+data[ , c("chol", "age", "sex")]
+```
+
+and the column numbers
+```{r}
+data[ , c(1:2, 4)]
+data[ , c(1, 2, 4)]
+```
+selecting column 1 to 2, and column 4. Note `c()` function here. It is used to concatenate or combine the numbers. R needs this to let it know we want to view all these columns together. `:` means `to`. Here `1:2` means from `1 to 2`.
+
+To select seventh to 14th observations,
+```{r}
+data[7:14, ]
+```
+
+Then, we want to view specific combination of rows and columns. In the example below, it can be done in several ways in R.
+```{r}
+data[7:14, c(2, 4)]
+data[7:14, c("chol", "age")]
+data[c(1:2, 7:14), c(2, 4)]
+data[c(1:2, 7:14), c("chol", "age")]
+```
+
+Quite intrestingly, not only you can select specific rows/columns, you can also exclude them! For example, to select the rest of the variables, except `age`,
+```{r}
+data[ , -2]
+```
+using `-` sign before the column number. Please note that this syntax is only possible with column/row numbers, you cannot use it in reference to the names.
+
+You can try the following,
+```{r}
+data[-c(1:10, 30:40), ]
+data[-c(1:10, 30:40), -c(1:2, 4)]
+```
+to explude the specific rows and columns. This is a very important and neat syntax whenever we are want to exclude some observations or variables for during the analysis.
+
+### Selecting based on logical expressions
+Practically, we want to choose observations based on certain criteria, for example those aged more than 35 year old, only females subjects and so on. This is easy with `subset()`, for example `age > 35`,
+```{r}
+subset(data, age > 35)
+subset(data, sex == "female")
+```
+
+alternatively, we can use square brackets, with a number of variants,
+```{r}
+data[data$age > 35, ]
+data[data[ , "age"] > 35, ]
+data[data[ , 2] > 35, ]
+data[data$sex == "female", ]
+data[data[ , "sex"] == "female", ]
+data[data[ , 4] == "female", ]
+```
+but the syntax it quite messy; we have to repeat `data` twice here, and the sysntax is difficult to grasp. But knowing the syntax is useful, just in case subset doesn't work.
+
+Logical expressions are several, which are
+- `==` equal.
+- `>=` more than or equal.
+- `<=` less than or equal.
+- `>` more than.
+- `<` less than.
+- `!=` not equal.
+
+You can play around with these expressions by changing `>` to these expressions in the example above.
+
+`subset` has this simple syntax, `subset(data, subset/row_expression, select = column)`. It can be used to select specific variables, for example,
+```{r}
+subset(data, select = c("chol", "age", "sex"))
+subset(data, select = c(chol, age, sex))
+```
+by omitting the `subset` argument. Notice that you don't even need to quote names using `" "` in `subset` argument parameter.
+
+Interestingly, using `subset`, you can apply `:` sign to names,
+```{r}
+subset(data, select = chol:sex)
+```
+
+Now let us try this, select those aged more or equal to 35, and `age`, `sex` variables,
+```{r}
+subset(data, age >= 35, select = c(age, sex))
+```
+
+Then try with a combination of expressions to select rows, for example those aged less or equal to 35 and/or female, and `chol`, `age` and `sex` variables,
+```{r}
+subset(data, age <= 35 & sex == "female", select = c(age, sex))
+subset(data, age <= 35 | sex == "female", select = c(age, sex))
+```
+Notice we used `&` for AND and `|` for OR in between the expressions.
+
+Run `levels()` to remind us the available factor levels for `sex`,
+```{r}
+levels(data$sex)
+```
+
+For the sake of completeness, you can try the following codes using `[ , ]` and `$` in place of `subset()`,
+```{r}
+data[data$age <=35 & data$sex == "female", c("age", "sex")]
+data[data$age <=35 | data$sex == "female", c("age", "sex")]
+data[data$age <=35 & data$sex == "female", ]$age  # view `age` only
+# using [ , ] and $ combination.
+```
+
+Actually, the most important reason why we bother with subsetting is that we can easy assign a subset of the dataset to a new data object. This will make our analysis easier when we deal with large datasets. For example,
+```{r}
+data_short <- data[1:20, c("age", "sex")]
+data_short
+( data_short <- data[1:20, c("age", "sex")] )
+str(data_short)
+```
+There's a new trick here. If we want to view the assigned data in one step, include `( )` the assignment codes in between the round brackets.
+
+## Editing data
+Using the same dataset `cholest.sav`, we want to add new variables based on the existing variables.
+
+### Creating a new variable
+For example, create age in months,
+```{r}
+data$age_month <- data$age * 12
+data$age_month
+```
+
+### Recoding into new variables
+
+#### From a numerical variable {-}
+From the numerical `age` variable,
+```{r}
+data$age_cat <- cut(data$age, breaks = c(-Inf,40,50,Inf),
+                    labels = c("< 40", "40-49", "> 50"))
+table(data$age_cat)
+str(data$age_cat)
+```
+
+#### From a categorical variable {-}
+Using the recently created `age_cat` variable,
+```{r}
+levels(data$age_cat)
+table(data$age_cat)
+```
+
+Only one observation is labeled as `> 50`. We want to combine `40-49` with `> 50`.
+```{r}
+library(car)
+data$age_cat1 <- recode(data$age_cat, 
+                        "c('40-49','> 50') = '40 & above'")
+table(data$age_cat1)  # combined
+```
+
+## Direct data entry
+We may also enter short data directly using `read.table`. This is very useful whenever we want to analyze data from tables, for example those obtained from research articles, and also data provided in textbooks.
+
+For example, a standard data frame,
+
+ID | Group | BMI |
+---|---|---:|
+1 | Fat | 30 |
+2 | Fat | 31 | 
+3 | Fat | 32 |
+4 | Thin | 20 |
+5 | Thin | 19 |
+6 | Thin | 18 |
+
+```{r}
+data_frame <- read.table(header = TRUE, text = "
+ID Group BMI
+1 Fat 30
+2 Fat 31
+3 Fat 32
+4 Thin 20
+5 Thin 19
+6 Thin 18
+")
+str(data_frame)
+data_frame
+```
+
+or a table,
+
+| | Cancer | No Cancer
+| --- | ---: | ---:
+| Smoker | 80 | 10
+| Non-smoker | 5 | 100
+
+```{r}
+data_table <- read.table(header = FALSE, text = "
+80 10
+5 100
+                        ")
+colnames(data_table) <- c("Cancer", "No Cancer")
+rownames(data_table) <- c("Smoker", "Non-smoker")
+str(data_table)  # still a data frame
+data_table <- as.table(as.matrix(data_table))  # convert to matrix
+# then to table, must do in two steps
+str(data_table)  # now a table
+data_table
+```
+The numbers are separated by space. We set the row and column names by `rownames` and `colnames` respectively.
+
+## Built-in datasets in R
+R also have a number of built-in datasets (some are also provided by loaded packages). The datasets are often used for teaching purposes in learning new statistical analyses. You can view the available datasets by
+```{r}
+data()
+```
+
+```
+## Data sets in package ‘datasets’:
+
+## AirPassengers                     Monthly Airline Passenger Numbers 1949-1960
+## BJsales                           Sales Data with Leading Indicator
+## BJsales.lead (BJsales)            Sales Data with Leading Indicator
+## BOD                               Biochemical Oxygen Demand
+## CO2                               Carbon Dioxide Uptake in Grass Plants
+## ...
+```
+We can view any dataset description by appending "?" to the dataset name. For example,
+```{r}
+?chickwts
+```
+We will use `chickwts` dataset in the next chapter.
+
+## Summary
+In this chapter, we learned how to handle data in R, which is very flexible. We learned how load, view and export data. We also learned how select subsamples from the data, and how to edit the data (creating new variables, recoding). Then we learned some basics on direct data entry for tables.
+
+In the next chapter, we are going to learn about how to explore the variables by means of basic descriptive statistics.

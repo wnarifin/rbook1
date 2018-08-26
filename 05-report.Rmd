@@ -16,3 +16,8 @@ In this chapter, we will learn how to combine bits and parts of your results int
 
 
 ## `stargazer`
+
+## Summary
+[summary here]
+
+In the next chapter, using a number of additional data sets, we will use the skills learned from all preceding chapters and conduct full exploration of the data, starting from the data description, descriptive statistics, plots and reporting.
