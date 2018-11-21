@@ -1,0 +1,19 @@
+---
+output:
+  pdf_document: default
+---
+
+# Practicals
+In this chapter, using a number of additional data sets, we will conduct full exploration of the data from data description, descriptive statistics, plots and reporting.
+
+## data 1
+
+
+## data 2
+
+
+## data 3
+
+
+## Summary
+[summary here]

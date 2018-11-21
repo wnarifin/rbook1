@@ -1,0 +1,27 @@
+---
+title: "Exploring data using R"
+author: "Kamarul Imran Musa, Wan Nor Arifin"
+date: '`r paste0("Draft updated ", format(Sys.time(), "%d %B %Y"))`'
+site: bookdown::bookdown_site
+output:
+  bookdown::pdf_book:
+    keep_tex: no
+documentclass: book
+bibliography:
+  - book.bib
+  - skeleton.bib
+csl: apa.csl
+nocite: '@*'
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, strip.white = TRUE, message = FALSE, error = FALSE)
+knitr::opts_chunk$set(out.width = "70%", out.extra = "keepaspectratio", fig.asp = 1, fig.align = "center")
+#knitr::opts_chunk$set(out.width = "70%", fig.align = "center")
+```
+
+```{r bib, include=FALSE}
+# create a bib file for the R packages used in this document
+knitr::write_bib(c('car', 'foreign', 'ggplot2', 'lattice', 'plyr', 'psych'), file = 'skeleton.bib')
+```

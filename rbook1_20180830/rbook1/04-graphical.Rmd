@@ -1,0 +1,561 @@
+---
+output:
+  pdf_document: default
+---
+
+# Visual exploration
+In this chapter, we will learn how to explore and understand the data by generating graphs. We will first use the built-in functions to come up with the graphs. Then, we will go through a number of powerful packages to generate visually pleasant graphs to summarize the data.
+
+## Introduction to visualization
+Data visualization is essentially "information that has been abstracted in some schematic form, including attributes or variables for the units of information" [@friendly2009].
+
+For further reading, you may read these sources:  
+
+1.  <https://en.m.wikipedia.org/wiki/Data_visualization>
+2.  <http://www.math.yorku.ca/SCS/Gallery/milestone/milestone.pdf>  
+
+### History of data visualization
+In his 1983 book _The Visual Display of Quantitative Information_ [@tufte1983visual], the author Edward Tufte defines _graphical displays_ and the principles for effective graphical displays. The book defines "excellence in statistical graphics consists of complex ideas communicated with clarity, precision and efficiency".
+
+### Processes and objectives of visualization
+Visualization is the process of representing data graphically and  interacting with these representations. The main objective is to gain insight into the data (<http://researcher.watson.ibm.com/researcher/view_group.php?id=143>)
+
+### What makes good graphics
+You may require these to make good graphics:
+
+1.  Data.
+2.  Substance rather than about method, graphic design, technology of graphic production or something else.
+3.  No distortion to what the data has to say.
+4.  Presence of many numbers in a small space.
+5.  Coherence for large data sets.
+6.  Encourage the eye to compare different pieces of data.
+7.  Reveal the data at several levels of detail, from a broad overview to the fine structure.
+8.  Serve a reasonably clear purpose: description, exploration, tabulation or decoration.
+9.  Be closely integrated with the statistical and verbal descriptions of a data set.
+
+## Graphics packages in R
+There are a number of graphics packages in R. A few of the packages are aimed to perform tasks related with graphs. Some provide graphics for certain analyses.
+
+The popular general graphics packages in R include:
+
+1.  `graphics`.
+2.  `lattice`.
+3.  `ggplot2`.
+
+Some examples of other more specific packages aimed to run graphics for certain analyses include:
+
+1.  `ggsurvlot()` in `survminer` package to plot survival probability.
+2.  `sjPlot` package to plot mixed models results.
+
+## Questions to ask before plotting graphs
+You must ask yourselves these questions:
+
+1. Which variable or variables do I want to plot?
+2. What is (or are) the type of that variable? 
+    - Are they factor (categorical) variables? 
+    - Are they numerical variables?
+3. Am I going to plot 
+    - a single variable?
+    - two variables together?
+    - three variables together?
+
+<!-- graphics -->
+## Using the `graphics` package
+We will use a dataset named `cholest.dta` which is in Stata format. 
+
+```{r}
+library(foreign)
+cholest <- read.dta("cholest.dta")
+```
+```{r, eval=FALSE}
+str(cholest)
+```
+```
+'data.frame':	80 obs. of  5 variables:
+ $ chol    : num  6.5 6.6 6.8 6.8 6.9 7 7 7.2 7.2 7.2 ...
+ $ age     : num  38 35 39 36 31 38 33 36 40 34 ...
+ $ exercise: num  6 5 6 5 4 4 5 5 4 6 ...
+ $ sex     : Factor w/ 2 levels "female","male": 2 2 2 2 2 2 2 2 2 2 ...
+ $ categ   : Factor w/ 3 levels "Grp A","Grp B",..: 1 1 1 1 1 1 1 1 1 1 ...
+ - attr(*, "datalabel")= chr ""
+ - attr(*, "time.stamp")= chr ""
+ - attr(*, "formats")= chr  "%10.0g" "%10.0g" "%10.0g" "%10.0g" ...
+ - attr(*, "types")= int  255 255 255 255 255
+ - attr(*, "val.labels")= chr  "" "" "" "sex" ...
+ - attr(*, "var.labels")= chr  "cholesterol in mmol/L" "age in year" 
+   "duration of exercise (hours/week)" "" ...
+ - attr(*, "version")= int 8
+ - attr(*, "label.table")=List of 2
+  ..$ sex  : Named int  0 1
+  .. ..- attr(*, "names")= chr  "female" "male"
+  ..$ categ: Named int  0 1 2
+  .. ..- attr(*, "names")= chr  "Grp A" "Grp B" "Grp C"
+```
+```{r}
+head(cholest); tail(cholest)
+summary(cholest)
+```
+
+#### Histogram {-}
+We create histograms with `hist(x, breaks, freq)` function. In the function, 
+
+1. the argument `x` is a numeric vector of values to be plotted.
+2. the argument option `freq = FALSE` plots probability densities instead of frequencies. 
+3. the argument option `breaks =` controls the number of bins.
+
+The basic one can be run with `x` alone, in our case `cholest$chol`,
+```{r}
+hist(cholest$chol)
+```
+
+Now, to refine the `hist()` function, we will:
+
+1. set the color `col =` argument to `red`,
+2. set the argument for the number of bins to 8 bins `breaks = 10`,
+3. label the x-axis using `xlab = "label"`,
+4. the plot title is set by `main = "title of plot"`.
+
+```{r}
+hist(cholest$chol, breaks = 10, col = "red",
+     main = "Cholesterol (mmol/l) distribution", xlab = "Cholesterol (mmol/l)")
+```
+
+#### Kernel density plot {-}
+Kernel density plots are usually a much more effective way to view the distribution of a numerical variable. 
+
+This can be done using `plot(density(x))`. In the function, the argument for x is a numeric vector.
+
+Below, we
+
+1. create the density data and named it as `d.plot`,
+2. next, we plot `d.plot`.
+
+```{r}
+d.plot <- density(cholest$chol) # returns the density data 
+plot(d.plot, main = "Kernel Density of Serum Cholesterol") # plots the results
+```
+
+`plot()` is a generic function for X-Y axes plotting. It accepts data frame and density objects and choose suitable plot automatically. You can view the details about `?plot` in the help.
+
+#### Combining the histogram and density curve {-}
+We can combine these plots in one single plot. Here, we will
+
+1. plot the histogram with density (instead of frequency),
+2. overlay the density curve on top of the histogram. To do that we need to use `lines()` in place of `plot()`. `plot()` will create a new plot, but `lines()` will overlay line(s) on top of any plot.
+
+```{r}
+hist(cholest$chol, breaks = 10, freq = FALSE, col = "red",
+     main = "Cholesterol (mmol/l) distribution", xlab = "Cholesterol (mmol/l)")
+lines(density(cholest$chol, adjust = 1.5))
+```
+Notice that you can `adjust =` the density bandwidth relative to the default bandwidth. Here we use `adjust = 1.5`.
+
+#### Box-and-whisker plot {-}
+We can easily obtain box-and-whisker plot using `boxplot()`,
+```{r}
+boxplot(cholest$chol, main = "Cholesterol (mmol/l) distribution",
+        ylab = "Cholesterol (mmol/l)")
+```
+Here we include `ylab`, which stands for y-axis label.
+
+`boxplot()` can easily handle many variables (of the same scale), for example we use `attitude` dataset,
+```{r}
+boxplot(attitude, col = rainbow(7))
+```
+We leave it to you to discover what `rainbow()` does.
+
+### Plotting relationship between numerical variables
+We can plot two numerical variables simultenously. From such plot, we can see the association or relationship between the two variables.  
+
+#### Scatter plot {-}
+Scatter plot is one of the most common plots to display the association between 2 numerical variables. The function is basically specified as `plot(x, y)`.
+
+Now we plot `age` on x-axis and `chol` on y-axis,
+```{r}
+plot(cholest$age, cholest$chol, main = "Scatterplot",
+     xlab = "Age", ylab = "Cholestrol", pch = 19)
+abline(line(cholest$age, cholest$chol))
+```
+Here we include a new argument, plotting character `pch`. Here we use `19` (see help `?points`). We can included a regression line, by combining `abline()` and `line()`. `abline()` gives you the straight line, while `line()` feeds the data of robust line fitting to `abline()`.
+
+You can always personalize the graphical parameters such as parameters for `fonts, colours, lines` and `symbols`. You can find the details in the `graphics` package documentation and help `?par`. In addition, this website summarizes the parameters in a very nice way: <http://www.statmethods.net/advgraphs/parameters.html>
+
+We can also plot a number of scatter plots simultaneously to explore the relationship between several numerical variables, for example using `iris` data set,
+```{r}
+str(iris)
+plot(iris[1:3])
+```
+and `attitude` data set,
+```{r}
+str(attitude)
+plot(attitude)
+```
+
+### Categorical variables
+For categorical variable, we can plot a barchart to display the frequencies of the data.
+
+Create a frequency table of intervention groups `categ` and name it as `counts`:
+```{r}
+counts <- table(cholest$categ)
+counts
+```
+
+Now, plot the frequencies for the `counts` object created above,
+```{r}
+barplot(counts, main="Frequency by intervention group", 
+        ylab = "Intervention group", xlab = "Frequency",
+        col = rainbow(3, alpha = 0.5))
+```
+Here we give `rainbow()` a bit twist by adding `alpha = 0.5` argument and value.
+
+We can make the plot look nicer by adding sample sizes to the bars,
+```{r}
+barplot(counts, main="Frequency by intervention group", 
+         xlab = "Intervention group", ylab = "Frequency",
+         col = rainbow(3, alpha = 0.5), ylim = c(0, 40)) -> bplot_setting
+text(bplot_setting, counts + 5, paste0("n = ", counts))
+```
+Notice `->` assignment sign, which is just the reverse of `<-` sign we are used to. We can also write the object name on the right hand side of the assignment arrangement. Here we intentionally do so to emphasize the `barplot()` codes. `bplot_setting` gives `text()` the x coordinates, and `counts + 5` gives it the y coordinates.
+
+To make things more complicated (a.k.a more interesting in R), we plot a stacked barchart. We need age categories to demonstrate a nice looking stacked bacrchart, and we create `age_cat`,
+```{r}
+# group `age` into `age_cat` = `< 35`, `35-45`, `> 45`
+cholest$age_cat = cut(cholest$age,
+                      breaks = c(-Inf, 35, 45, Inf),
+                      labels = c("<35", "35-45", ">45"))
+```
+
+Then we obtain the cross-tabulated counts between `sex` and `age_cat`,
+```{r}
+cross <- table(cholest$sex, cholest$age_cat)
+addmargins(cross)  # just to get an overview of the height of the bars
+```
+
+Plot our nice stacked barchart,
+```{r}
+barplot(cross, main = "Frequency by age group",
+        xlab = "Age group", ylab = "Frequency",
+        col = rainbow(2, alpha = 0.5), ylim = c(0, 60),
+        legend = rownames(cross)) -> bplot_setting
+text(rep(bplot_setting, each = 2), c(4, 12, 12, 39, 4, 9),
+     paste0("n = ", cross))  # adjust y coordinates to your liking
+```
+Note how we use `rep()` to repeat x coordinates twice for each age category.
+
+### Saving plots in R
+We can save the generated plots. In RStudio, under **Plots** tab, yiou can click on the **Export** button to save the plots as image of PDF. Alternatively, we can automaticaly save the plots (without viewing the plots). The examples below will save the plot as image and PDF formats.
+
+Here we save as an image `.png`,
+```{r}
+png(file = "hist.png")
+hist(cholest$chol)
+dev.off()
+```
+`png()` opens creates an empty file namely `airmiles.png`, while `dev.off()` closes the file and save whatever plot you have in between these two lines (limited to the last one if you specified several plots).
+
+You can also specify the `width = ` and `height =` of the image. View the help for `?png`. The help also lists functions for the rest of image formats such as `bmp, jpeg` and `tiff`.
+
+Now, we can also save as PDF,
+```{r}
+pdf("plots.pdf")
+hist(cholest$chol, freq = FALSE)
+lines(density(cholest$chol))
+barplot(table(cholest$sex))
+plot(cholest$chol, cholest$age)
+dev.off()
+```
+The advantage of saving as PDF is because we can save many plots in a single PDF file as demonstrated here. The quality of the saved plots is also very good as compared to saving as images.
+
+## Using the `lattice` package
+`lattice` package can create beautiful plots too. Its main emphasis is on the visualization of multivariate data, thus it is very useful for plotting multiple plots, for example histograms of questionnaire items. It is also easy to visualize the data by groups in `lattice` as we will show in examples below. A very useful introduction to `lattice` package by the package developer can be found here <http://lattice.r-forge.r-project.org/Vignettes/src/lattice-intro/lattice-intro.pdf>.
+
+### Histogram, density and box-and-whisker plots
+Load the `lattice` package,
+```{r}
+library(lattice)
+```
+
+Plot a histogram for variable `chol` and label the x-axis
+```{r}
+histogram(~ chol, data = cholest, xlab = 'Cholesterol level')
+```
+
+Now we plot a density plot for variable `chol`,
+```{r}
+densityplot(~ chol, data = cholest, xlab = 'Cholesterol level')
+```
+followed by a box-and-whisker plot for the variable,
+```{r}
+bwplot(~ chol, data = cholest, xlab = 'Cholesterol level')
+```
+
+### Histogram, density and box-and-whisker plots by group
+It is easy to plot these plots by group in `lattice`, making it a quick data visualization package.
+
+Histograms,
+```{r}
+histogram(~ chol | sex, data = cholest, xlab = 'Cholesterol level')
+histogram(~ chol | sex, data = cholest, layout = c(1, 2), xlab = 'Cholesterol level')
+```
+Here, we use `layout = c(1, 2)` for `lattice` argument. This means "1" column (over the x-axis) and "2" rows (along the y-axis).
+
+Density plots,
+```{r}
+densityplot(~ chol | sex, data = cholest, xlab = 'Cholesterol level')
+densityplot(~ chol | sex, data = cholest, layout = c(1, 2), xlab = 'Cholesterol level')
+```
+
+Boxplots,
+```{r}
+bwplot(chol ~ sex, data = cholest, ylab = 'Cholesterol level')
+bwplot(sex ~ chol, data = cholest, ylab = 'Cholesterol level')  # note the change in x-y axis.
+bwplot(~ chol | sex, data = cholest, layout = c(1, 2), xlab = 'Cholesterol level')
+```
+
+Then we add an extra grouping layer (`age_cat`) to the boxplots. Remember that we created `age_cat` in the previous section and added it to `cholest` data frame.
+```{r}
+bwplot(age_cat ~ chol | sex, data = cholest, layout = c(2, 1))
+```
+
+### Scatter plot
+We can also plot scatter plot easily in `lattice`,
+```{r}
+xyplot(chol ~ age, data = cholest)
+```
+
+However, to add the line is a bit tricky as shown below,
+```{r}
+xyplot(chol ~ age, data = cholest,
+       panel = function(x, y) {
+         panel.xyplot(x, y)
+         panel.abline(line(x, y))
+         })
+```
+We find it easier to do this by `graphics` package.
+
+Despite this slight "trickiness", it is relatively easily to obtain scatter plots by group,
+```{r}
+xyplot(chol ~ age | sex, data = cholest,
+       panel = function(x, y) {
+         panel.xyplot(x, y)
+         panel.abline(line(x, y))
+       })
+```
+
+### Barchart
+For categorical variables, we can easily plot barcharts in `lattice`. We generate the count per group for the categorical variable, for example `categ`:
+```{r}
+counts <- table(cholest$categ)
+counts
+```
+
+Now, plot the frequencies for the `counts` object,
+```{r}
+barchart(counts, ylab = "Intervention group", xlab = "Frequency", 
+         col = rainbow(3))
+```
+
+We can also have stacked barchart based on counts from cross-tabulation of `sex` and `age_cat`,
+```{r}
+cross <- table(cholest$sex, cholest$age_cat)
+barchart(cross, auto.key = T, ylab = "Sex", xlab = "Frequency")
+barchart(t(cross), auto.key = T, ylab = "Age group", xlab = "Frequency")
+```
+`auto.key` automatically gives us the legend. This is a special feature of `lattice`. With `auto.key` it is better to leave the color choice to the function. We also use `t()` transpose function. Because `barchart()` treat counts from `cross` object by row instead of by column, we need to transpose the arrangement of the row and column to replicate `barplot()` behavior (i.e. in the previous section).
+
+For a more flexible chart setting, convert the count table to a data frame,
+```{r}
+counts_df = as.data.frame(counts)
+colnames(counts_df) = c("Category", "Count")  # set the column names
+counts_df
+```
+
+Then, we can plot with `Category` as x-axis and `Count` on y-axis,
+```{r}
+barchart(Count ~ Category, data = counts_df,
+         col = rainbow(3, alpha = 0.5), ylim = c(0, 40))
+```
+
+We can also plot barcharts by group using our cross-tabulated counts, `cross` object. Convert the table format into a data frame,
+```{r)}
+cross_df = as.data.frame(cross)  # save as data frame
+colnames(cross_df) = c("Sex", "Age_Group", "Count")  # give proper names
+cross_df
+```
+
+Then, plot the barcharts,
+```{r}
+barchart(Count ~ Sex | Age_Group, data = cross_df, 
+         ylim = c(0, 30), col = rainbow(2, alpha = 0.5),
+         xlab = "Sex", layout = c(3, 1))
+barchart(Count ~ Age_Group | Sex, data = cross_df, 
+         ylim = c(0, 30), col = rainbow(3, alpha = 0.5),
+         xlab = "Age Group", layout = c(2, 1))
+```
+
+### Histograms and box-and-whisker plots
+The beauty of `lattice` is in the visualization of multivariate data. We use `attitude` questionaire data set to demonstrate this point.
+
+Obtain the list of variables, separated by " + ". This is easily done by `cat()`,
+```{r}
+cat(names(attitude), sep = " + ")
+```
+
+Plot histograms. Copy-paste from our output of `cat` just now,
+```{r}
+histogram(~ rating + complaints + privileges + learning + raises + critical 
+          + advance, data = attitude)
+```
+Multiple histogram using `lattice` is meant for numerical variables with same scales, in our case here, percentages.
+
+Plot density plots,
+```{r}
+densityplot(~ rating + complaints + privileges + learning + raises + critical 
+            + advance, data = attitude, auto.key = T)
+```
+
+However, it is not practical to obtain box-and-whisker plots for variables using `bwplot()`, because `lattice` requires outcome and group variables to plot (i.e. as `bwplot(group ~ numerical)`)
+
+<!-- ggplot2 -->
+## Using the `ggplot2` package
+The official website for ggplot2 is here <http://ggplot2.org/>. In their own words, the package is described as
+
+> *ggplot2 is a plotting system for R, based on the grammar of graphics, which tries to take the good parts of base and lattice graphics and none of the bad parts. It takes care of many of the fiddly details that make plotting a hassle (like drawing legends) as well as providing a powerful model of graphics that makes it easy to produce complex multi-layered graphics.*
+
+### One variable: Plotting a numerical variable
+
+Plot distribution of values of a numerical variable.
+
+#### Histogram {-}
+
+Load the `ggplot2` package,
+```{r}
+library(ggplot2)
+```
+
+In `ggplot2`, 
+
+1. type `ggplot(data = X)` function to choose the dataset,
+2. the `aes()` for variable or variables to be plotted,
+3. then we use `geom_X` to specify the geometric (X) form of the plot.
+
+```{r}
+myplot <- ggplot(data = cholest, aes(x = chol))
+myplot + geom_histogram(binwidth = 0.5)
+```
+
+`ggplot2` has lots of flexibility and personalization. For example, we can set the line color and fill color, the theme, the size, the symbols etc. 
+
+```{r}
+ggplot(cholest, aes(x = chol)) + geom_histogram(binwidth = 0.5, 
+                                                colour = "black", fill = "white")
+```
+
+#### Density curve {-}
+Density is useful to examine the distribution of observations.
+
+```{r}
+ggplot(data = subset(cholest, !is.na(chol)), aes(x = chol)) + geom_density()
+```
+
+#### Combining the histogram and the density curve {-}
+`ggplot2` allows plot to be displayed together. We can combine multiple plots in one single plot by overlaying multiple plots on one another.
+
+Here, we will
+
+1. create a histogram plot,
+2. create a density curve plot,
+3. overlay both (the density curve + the histogram). 
+
+To do this we need to specify a histogram with density instead of count on y-axis
+
+```{r}
+ggplot(data = subset(cholest, !is.na(chol)), aes(x = chol)) + 
+  geom_histogram(aes(y = ..density..), binwidth = 0.5, colour = "black", fill = "white") +
+  geom_density(alpha = .2, fill = "#FF6666")
+```
+
+### One variable: Plotting a categorical variable
+Now, let us create a basic barchart using `ggplot2::geom_bar()`
+```{r}
+
+sex_bar <- ggplot(data = cholest, aes(sex))
+sex_bar + geom_bar()
+```
+
+The barchart looks OK, but we want to personalize it more - make it prettier and more presentable:
+
+1. Add labels to x and y axes `xlab()` and `ylab()`.
+2. Add the title `ggtitle()`.
+
+```{r}
+ggplot(data = cholest, mapping = aes(sex, fill = sex)) + 
+  geom_bar() + xlab('Sex') + ylab('Freq') +
+  ggtitle('Freq of male and female')
+```
+
+In addition, there is an excellent resource from this website on ggplot2: <http://www.cookbook-r.com/Graphs/Bar_and_line_graphs_(ggplot2)/>
+
+### Two variables: Plotting a numerical and a categorical variable
+Now, examine the distribution of a numerical variable (`rating`) in two groups (A and B) of the variable `cond` by
+
+1. overlaying two histograms,
+2. interleaving two histograms,
+3. overlaying two density curve.
+
+#### Overlaying histograms {-}
+```{r}
+
+ggplot(cholest, aes(x = chol, fill = sex)) +
+    geom_histogram(binwidth = .5, alpha = .5, position = "identity")
+```
+
+#### Interleaving histograms {-}
+```{r}
+ggplot(cholest, aes(x = chol, fill = sex)) +
+    geom_histogram(binwidth = .5, position = "dodge")
+```
+
+#### Overlaying density plots {-}
+Full transparent
+```{r}
+ggplot(cholest, aes(x = chol, colour = sex)) + geom_density()
+```
+
+Now, try set the transparency at $30\%$
+```{r}
+# Density plots with semi-transparent fill
+ggplot(cholest, aes(x = chol, colour = sex)) + geom_density(alpha = .3)
+```
+
+#### Using facets {-}
+We use `facet_grid()` to split the plot. There are two types of facetting the plot:
+
+1. Vertical facet.
+2. Horizontal facet.
+
+The vertical facets
+```{r}
+ggplot(data = cholest, aes(x = chol)) + 
+  geom_histogram(binwidth = .5, colour = "black", fill = "white") + 
+  facet_grid(sex ~ .)
+```
+
+The horizontal facets
+```{r}
+ggplot(data = cholest, aes(x = chol)) + 
+  geom_histogram(binwidth = .5, colour = "black", fill = "white") + 
+  facet_grid(. ~ sex)
+```
+
+### Saving plots in ggplot2
+This will save the last plot as `.png` and `.pdf` formats,
+```{r}
+ggsave("myhistogram.png", width = 5, height = 5)
+ggsave("myhistogram.pdf", width = 5, height = 5)
+```
+
+## Summary
+In this chapter, we learned to plot graphs in R, using the built-in functions and additional packages. We also learned how powerful R can be to generate visually beautiful graphs and how customizable the graphs are.
+
+In the next chapter, we will learn how to combine outputs into custom-made texts, labels and tables. This will be useful in reporting and summarizing your results for publication, and labeling axes on your plots.

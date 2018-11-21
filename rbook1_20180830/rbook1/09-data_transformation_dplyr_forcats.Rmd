@@ -1,0 +1,289 @@
+---
+title: |
+  | Data Management II 
+  | using dplyr and forcats
+author: |
+  | Kamarul Imran Musa
+  | Assoc Prof (Epidemiology and Statistics)
+date: '`r Sys.Date()`'
+output: 
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\newpage
+
+# Data transformation (data munging or data wrangling)
+
+## Definition of data wrangling 
+
+1.  Data munging or data wrangling is loosely the process of manually converting or mapping data from one "raw" form into another format.
+2.  The process allows for more convenient consumption of the data. 
+3.  In doing so, we will be using semi-automated tools. 
+
+Refer <https://community.modeanalytics.com/sql/tutorial/data-wrangling-with-sql/>
+
+## Package: dplyr 
+
+### About dplyr package 
+
+**dplyr** is a package grouped inside **tidyverse** collection of packages. 
+
+**dplyr** package is a very useful package to munge or wrangle or to tranform your data. 
+
+It is really a grammar of data manipulation. It provides a consistent set of verbs that help you solve the most common data manipulation challenges
+
+Refer <https://github.com/tidyverse/dplyr>
+
+## Data wrangling (or transformation) using dplyr
+
+When we communicate with data, common procedures include
+
+1.  reducing the size of dataset by selecting certain variables (or columns)
+2.  generating new variables from existing variables 
+3.  sorting observation of a variable 
+4.  grouping observations that fulfil certain criteria
+5.  reducing variable to groups to in order to estimate summary statistic 
+
+# Using dplyr package 
+
+For the procedures listed above, the corresponding **dplyr** functions are
+
+1.  `select` - to reduce the size of dataset by selecting certain variables  
+2.  `mutate` - to generate new variables from existing variables 
+3.  `arrange` - to sort observation of a variable
+4.  `filter` - to group observations that fulfil certain criteria 
+5.  `group_by` and `summarize` - to reduce variable to groups to in order to estimate summary statistic  
+
+## Hands-on 1: Preparation and data
+
+### Working directory and data format
+
+It is very important to ensure you know where your working directory is. 
+
+Every time you want to start processing your data, please make sure:
+
+1.  you have set your working directory. Type `setwd()` will display the active **working directory**.  
+2.  then, read (import) the data you want to analyze. 
+
+Remember, there are a number of ways and packages useful to read the data. They depend on the format of your data. For example SPSS format, Stata format, SAS format, MS Excel format and `.csv` format. 
+
+Two useful packages - **haven** and **foreign** packages - are very useful to read or import your data into R memory. Take note that, different packages require you to specify different parameters inside the arguments. 
+
+### Training data
+
+To make life easier and to facilitate reproducibility, we will use examples available from the public domains.
+
+To reproduce the outputs demonstrated on **tidyverse** website <https://github.com/tidyverse/dplyr>, we will use similar dataset or datasets with them. 
+
+One of the useful datasets is 'starwars'. The `starwars` data comes with **dplyr** package. This data comes from SWAPI, the Star Wars API accessible at http://swapi.co/. 
+
+The 'starwars' data is class of `tibble`. The data have:
+
+- 87 rows (observations)  
+- 13 columns (variables)
+
+Now, let us:
+
+1.  load the **dplyr** package
+2.  examine the column names (variable names) 
+
+```{r}
+library(dplyr)
+names(starwars)
+```
+
+Next, examine the first 10 observations of the data. There are 77 more rows and 7 more variables NOT SHOWN. You can also see the types of the variables `chr`, `int`, `dbl`
+
+```{r}
+starwars
+```
+
+## Hands-on 2: `select()` and `mutate()` 
+
+### `select()`
+
+When you work with large datasets with many columns, sometimes it is easier to select only necessary columns to create a smaller dataset that you can work on. 
+
+To create smaller datasets, select only some of the columns. This will greatly help data exploration or analysis.  
+
+In `starwars` data, we have 13 variables. Let us select only variables below, then generate a new dataset named as `mysw` :
+
+1.  name
+2.  height (cm)
+3.  mass (kg) 
+4.  gender
+
+```{r}
+mysw <- select(starwars, name, gender, height, mass)
+mysw
+```
+
+
+
+### `mutate()`
+
+With `mutate()`, you can generate new variable or variables. 
+
+For example, in the dataset `mysw`, we want to create a new variable `bmi` which equals mass in kg divided by squared height (in meter) $$bmi = \frac{kg}{m^2}$$
+
+
+```{r}
+mysw <- mutate(mysw, bmi = mass/(height/100)^2)
+mysw
+```
+
+## Hands-on 3: `arrange()` and `filter()`
+
+### arrange
+
+To easily sort (ascending or descending) data, the `arrange` function is useful. 
+
+The `arrange` function will sort the observation based on the values of the specified variable. 
+
+Let create a new dataset (`mysw`) by sorting the observation of variable bmi from the biggest bmi to the lowest bmi:
+
+```{r}
+mysw <- arrange(mysw, desc(bmi))
+mysw
+```
+
+Now, we will replace the dataset `mysw` with data that contain bmi values from the lowest to the biggest bmi 
+
+```{r}
+mysw <- arrange(mysw, bmi)
+mysw
+```
+
+
+### filter
+
+To group observations based on certain criteria, we use the `filter` function. 
+
+Here, We will create a new dataset `mysw_m_40` that contains only **male** gender and **bmi at or above 30** 
+
+```{r}
+mysw_m_40 <- filter(mysw, gender == 'male', bmi >= 30)
+mysw_m_40
+```
+
+There are missing (NA) bmi observation in the dataset. How about, we create a new dataset containing height above 200 or BMI above 45, BUT does not include NA observation for bmi
+
+```{r}
+mysw_ht_45 <- filter(mysw, height >200 | bmi >45, bmi != 'NA')
+mysw_ht_45
+```
+
+## Hands-on 4: group_by 
+
+### Summarize data - summarize
+
+To use `summarize` function, the `group_by` function is almost always necessary. 
+
+The `group_by` function will prepare the data for group analysis. For example, 
+
+1.  to get summary values for mean **bmi**, mean **ht** and mean **mass**
+2.  for male, female, hermaphrodite and none (**gender** variable)
+
+```{r}
+mysw_g <- group_by(mysw, gender)
+summarise(mysw_g, meanbmi = mean(bmi, na.rm = TRUE),
+                  meanht  = mean(height, na.rm = TRUE),
+                  meanmass = mean(mass, na.rm = TRUE))
+```
+
+## Summary
+
+'dplyr' package is a very useful package that encourage users to use proper verb when manipulating variables (columns) and observations (rows). 
+
+We have learned to use 5 functions but there are more functions available. 
+
+Other useful functions are:
+
+1.  distinct()
+2.  mutate() and transmute()
+3.  sample_n() and sample_frac()
+
+Also note that, package 'dplyr' is very useful when it is combined with another function that is 'group_by'
+
+# Using forcats package
+
+This package helps to work with factor variables. 
+
+
+## Hands-on 5: forcats
+
+### New dataset
+
+To start with let us create a dummy dataset:
+
+1.  a vector data **sex1** , values = 0,1
+2.  a vector data **race1** , values = 1,2,3,4
+3.  a dataframe (dataset) **data_f**
+
+```{r}
+sex1 <- rbinom(n = 100, size = 1, prob = 0.5) 
+str(sex1)
+race1 <- rep(seq(1:4), 25)
+str(race1)
+data_f <- data.frame(sex1, race1)
+head(data_f)
+```
+
+We can see the data now, above. 
+
+Now let us see the structure of all variables. You should see that they are all in the integer (numerical) format
+
+```{r}
+str(data_f)
+```
+
+### Convert numeric to factor variables
+
+
+
+1.  Generate male variable from sex: sex1 (int) to male (a factor variable). Label as No or Yes 
+2.  Generate race2 variable from race1: race1 (int) to race2 (a factor variable). Label as Mal, Chi, Ind, Others
+
+```{r}
+data_f$male <- factor(data_f$sex1, labels = c('No', 'Yes')) 
+data_f$race2 <- factor(data_f$race1, labels = c('Mal', 'Chi', 'Ind', 'Others')) 
+str(data_f)
+```
+
+### Recode old to new levels
+
+Steps:
+
+1.  For variable **male**, change from `No` vs `Yes` TO `Fem` and `Male`
+2.  Create a new variable **malay** from variable **race2** AND 
+3.  Label `Chi` to `Non-Malay`, `Ind` to `Non-Malay` and `Others` to `Non-Malay`. But we keep `Mal` as it is
+
+Now, we need **dplyr** and **forcats** perform steps 1 to 3 above. 
+
+```{r} 
+library(dplyr)
+library(forcats)
+data_f$male <- data_f$male %>% fct_recode('Fem' = 'No', 'Male' = 'Yes')
+data_f <- data_f %>% mutate(malay = fct_recode(race2, 
+                                               'Non-Malay' = 'Chi', 
+                                               'Non-Malay' = 'Ind', 
+                                               'Non-Malay' = 'Others'))
+head(data_f)
+```
+
+# Session 
+
+```{r}
+sessionInfo()
+```
+
+
+

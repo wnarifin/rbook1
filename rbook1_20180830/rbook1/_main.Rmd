@@ -1,0 +1,515 @@
+---
+title: "Exploring data using R"
+author: "Kamarul Imran Musa, Wan Nor Arifin"
+date: '`r paste0("Draft updated ", format(Sys.time(), "%d %B %Y"))`'
+site: bookdown::bookdown_site
+output:
+  bookdown::pdf_book:
+    keep_tex: no
+documentclass: book
+bibliography:
+  - book.bib
+  - skeleton.bib
+csl: apa.csl
+nocite: '@*'
+link-citations: yes
+---
+---
+title: "Exploring data using R"
+author: "Kamarul Imran Musa, Wan Nor Arifin"
+date: '`r paste0("Draft updated ", format(Sys.time(), "%d %B %Y"))`'
+site: bookdown::bookdown_site
+output:
+  bookdown::pdf_book:
+    keep_tex: no
+documentclass: book
+bibliography:
+  - book.bib
+  - skeleton.bib
+csl: apa.csl
+nocite: '@*'
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, strip.white = TRUE, message = FALSE, error = FALSE)
+knitr::opts_chunk$set(out.width = "70%", out.extra = "keepaspectratio", fig.asp = 1, fig.align = "center")
+#knitr::opts_chunk$set(out.width = "70%", fig.align = "center")
+```
+
+```{r bib, include=FALSE}
+# create a bib file for the R packages used in this document
+knitr::write_bib(c('car', 'foreign', 'ggplot2', 'lattice', 'plyr', 'psych'), file = 'skeleton.bib')
+```
+
+<!--chapter:end:index.Rmd-->
+
+---
+output:
+  pdf_document: default
+---
+
+# Preface {-}
+This is a book on data exploration using R. The focus of this book is mainly on the basics of R, data entry and management, descriptive statistics and graphical exploration of the data.
+
+We did not cover basic statistical analyses, for examples t-test and chi-squared test, to focus on the basics in data exploration. By limiting the scope to data exploration, we can cover this aspect of handling data in greater details.
+
+We also include a chapter on combining outputs for data presentation and also some packages that provide nice looking ready-made tables. To end this book, we provide more examples using a number of selected datasets, covering the data exploration skills from the preceding chapters.
+
+All in all, we hope you enjoy this book!
+
+#### Kamarul Imran Musa, Wan Nor Arifin {-}
+
+<!--chapter:end:00-preface.Rmd-->
+
+---
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+# Introduction to R
+This chapter introduces the basics of getting started with R. We start with installing R and RStudio, some basics about R syntax, dealing with packages and setting up the working directory.
+
+## R
+
+### Installing R
+
+The latest version of R is `r version[13:14]`. R can run on Windows OS, Mac OS and Linux distribution. 
+
+You need to download the R installation files from <https://cran.r-project.org/>. And you can install many versions of R in one single machine. There is no need to uninstall if you want to upgrade the currently installed R. The size of installtion files as of today `r Sys.Date()` is about 80 megabytes. 
+
+The links to install R for
+
+1.  Windows is <https://cran.r-project.org/bin/windows/>. Then click `base` subdirectories
+2. Mac OS is <https://cran.r-project.org/bin/macosx/>
+3. Linux is <https://cran.r-project.org/bin/linux/>
+
+### Starting R
+
+You can start R software like starting any other software. In Windows, double click on R icon on the Start page and you should get this:
+
+![R console](img/openr.png)
+
+If you can see the R GUI, you are good to go. In the figure, I am using the Microsoft R Open version 3.3.3. In your case, the R will be shown as just R version `r version[13:14]`.
+
+## RStudio
+
+### Installing RStudio
+
+We encourage you to install RStudio in your machine. In the RStudio website, the company describes RStudio as follows:
+
+> *RStudio is an integrated development environment (IDE) for R. It includes a console, syntax-highlighting editor that supports direct code execution, as well as tools for plotting, history, debugging and workspace management.* 
+
+The full information about RStudio can be found here <https://www.rstudio.com/products/rstudio/>. RStudio is available in open source and commercial editions. It runs on the desktop with Windows OS, Mac OS, and Linux OS. It can also run in a browser connected to RStudio Server or RStudio Server Pro.
+
+RStudio installation files can be downloaded from <http://www.rstudio.com/products/rstudio/download/>. Take note that it is recommended that you, firstly install R before trying to install RStudio. In the download link, choose the Free RStudio Desktop and click the download button. From there, you can a list of downloadable RStudio depending on the supported platforms. 
+
+From there, download the installation files. Once the download has finished, follow the simple instructions. 
+
+### Starting RStudio
+You can double click on RStudio icon in the menu or your start page on your computer desktop and you will see the RStudio interface. Take note of the R version in the RStudio Console, most probably on the right hand side of the computer screen.
+
+![RStudio](img/panes.png)
+
+### Why RStudio?
+Based on our experience and the experience of others, we feel working with RStudio helps new users learn R quicker in the beginning. 
+
+The green R GUI is way too intimidating to new users especially to those with no experience with programming language. What we want to say is that, working with R console is alright, but for majority of new users, they prefer to communicate with R using a RStudio.
+
+RStudio is more than a GUI. RStudio is intergrated developement environment (IDE) for R. Other R IDEs includes Microsoft R Open. 
+To learn more about R IDE and GUI, check out these links:
+
+1.  RStudio at <https://www.rstudio.com/>
+2.  Microsoft R Open at <https://mran.microsoft.com/open>
+3.  Tinn-R at <https://sourceforge.net/p/tinn-r/wiki/Home/>
+
+### RStudio interface
+You should be able to see 3 (Figure 1.2) or 4 panes (Figure 1.3) in the layout. There are:
+
+1.  Console pane - on the left side of your computer screen. It tells you about your R, when you first start RStudio.
+2.  Source pane - on the upper left side of your computer screen. This will show the R script, R markdown files and other active files. The first time you start RStudio, this pane is not shown.
+3.  Environment and History panes - on the upper right side of your computer screen. It is where you can see the objects created by R, the codes that you have run and the connections to data sources such as databases. 
+4. Miscellaneous - on the lower right screen of your computer. It contains smaller tabs, Files, Plots, Packages, Help and Viewer. This tabs can list file names, show plots, show packages, display help document and view outputs.
+
+![Panes in RStudio](img/panes4.png)
+
+### Entering the codes in RStudio
+To start using R, you need to open up an R script. In RStudio, click **File > New File > R Script**, or click on the icon ![](img/plus.png)\ and choose **R Script** from the dropdown menu. You may also type the shortcut **Ctrl+Shift+N**. You should be able to get RStudio interface similar to Figure 1.3 before (four panes view).
+
+Each line of code can be run by placing the cursor on any specific line, followed by **Ctrl+Enter**. You may also run several lines of codes by highlighting the lines followed by **Ctrl+Enter**. And, you may even run a small part in a line by selecting the part only, and **Ctrl+Enter**.
+
+Later, you will notice some codes have hashes `#` in the codes (for starter, in the next section). `#` marks specific parts of codes as comments. These parts will not be run by R for analysis. R will recognize the lines/parts marked with `#` as comments. This is very important in any programming language. Because may end up having to deal with long lines of codes, it will be helpful to comment parts of codes to describe what the codes do. This is very advantageous to us, because we can nicely document our codes and describe whatever we do during the analysis. Think of hashtag for the social media! `#` can be used to comment the whole line or for a short commetn at the end of a line.
+
+## Functions and objects
+Before we start, there are a number of basics that you must know to understand the syntax in R. These are functions and objects.
+
+### Functions
+R commands are in the form of `function(argument = value, argument = value, ...)`. If you are familiar with MS Excel, think of MS Excel **functions**.
+
+Inside a function `function()`, there will be a number of **arguments**. For each argument, you may need to provide the **values**. We will see this as we go through examples later.
+
+### Objects
+Object is like a container. You assign an object by giving it a name on left side of `<-` or `=`. For the sake of consistency, we will use `<-` throughout, although `=` is perfectly fine (some might argue about this though).
+```{r}
+# try these three lines of codes
+x <- 1
+y = 2
+z <- x + y  # sum up x and y
+```
+Type the object name `x`, `y`, and `z`, you'll get the value,
+```{r}
+x
+y
+z
+```
+Now you will notice that the `=` symbol is used to set the value (or parameter) for the argument of a function, i.e. inside the bracket after the function's name. For example, `function(argument1 = value, argument2 = value, ...)`. Thus, some people prefer using `<-` to avoid confusion with `=` for setting the values for the arguments.
+
+## Packages
+R run on packages. In each package, there are function. This can be represented as **package::function()**. This packages will be installed in your home directory. To know where this directory is located, type this `r .libPaths()` 
+
+There are two packages in R:
+
+1.  `base` packages 
+2.  `user-contributed` packages
+
+### `base` packages
+The base packages come with the installation of R. They provide basic but adequate functions to perform many standard data management, visualization and analysis.
+
+### `user-contributed` packages
+However, in many situations, user needs to install user-contributed packages to deal with their data. These user-contributed packages are necessary to perform tasks that are not available in the base packages.
+
+User-contributed packages allow users to perform more advanced and more complicated functions and they are contributed by R users all over the world. There are more than 12000 packages as of April 2018
+
+For a complete list of packages, see <https://cran.r-project.org/web/packages/>. The packages name can be found here <https://cran.r-project.org/web/packages/available_packages_by_name.html>. CRAN Task Views (<https://cran.r-project.org/web/views/>) aggregated all the packages according to their main tasks for examples packages to deal with:
+
+1.  *Clinical Trials*: Clinical Trial Design, Monitoring and Analysis <https://cran.r-project.org/web/views/ClinicalTrials.html>
+2.  *MetaAnalysis*: <https://cran.r-project.org/web/views/MetaAnalysis.html>
+3.  *SocialSciences*: Statistics for Social Sciences <https://cran.r-project.org/web/views/SocialSciences.html>
+4.  *Spatial*: Analysis of Spatial data <https://cran.r-project.org/web/views/Spatial.html>
+
+### Installing packages
+You can install user-contributed packages through:
+
+1.  Internet (from CRAN repository).
+2.  Local .zip or tar.gz files.
+3.  Github packages.
+
+We will now learn to install a package. You must have an active internet connection.
+
+### Using function {-}
+Basically, a function to install a package looks like this:
+```{r, eval=FALSE}
+install.packages("package.name")
+```
+
+To install a package, say `car`,
+
+1.  put your cursor in the CONSOLE pane
+2.  type the codes below
+```{r, eval=FALSE}
+install.packages("car")
+```
+3.  press Ctrl + ENTER
+
+You can also install multiple packages, for example `car` and `plyr`,
+```{r, eval = FALSE}
+install.packages(c("car", "plyr"))
+```
+
+### Using **Packages** tab {-}
+It is easier to install in RStudio. Click on **Packages > Install**. You can install many packages in one go, with the package names separated by space or comma.
+
+In addition, you can click on **Install from:** dropdown menu and install from downloaded files (.zip, .tar.gz) by selecting **Package Archive File**.
+
+
+### Loading packages
+Basically, to utilize a package, it has to be loaded using `library()` function,
+```{r, eval=FALSE}
+library("package.name")
+```
+
+For example, we load the newly installed `car` package
+```{r, eval=FALSE}
+library("car")
+```
+
+## Working directory
+In general, R reads and saves data and other files into a working directory. Therefore, a user must create or specify the working directory to work with R. This is a good practice. 
+
+A working directory:
+
+1.  stores all the outputs such as the plots, html files, pdf files 
+2.  contains your data
+
+Creating a working directory is a simple BUT an important step. 
+
+Unfortunately, many users do not pay attention to this and forget to set it. So, remember, this is a very important step to work in R.
+
+### Setting a working directory
+
+To set your working directory:
+
+1.  Go back to RStudio's Miscellaneous pane.
+2.  In the Files tab, click *...* 
+3.  Navigate to the folder containing your data or any folder you want to work in.
+4.  Click *More* 
+5.  Click *Set as working directory*
+
+or simply use `setwd` function to do so. 
+```{r, eval=FALSE}
+setwd("path to your folder")
+```
+for example in Windows
+```{r, eval=FALSE}
+setwd("C:/myfolder")
+```
+or in Mac OS/Linux
+```{r, eval=FALSE}
+setwd("~/myfolder")
+```
+
+## Getting help
+We can easily access the documentation for any package or function by appending `?` before its name, for example, for help on `car` package,
+```{r, eval = FALSE}
+?car
+```
+
+or for help on `mean()` function,
+```{r, eval = FALSE}
+?mean
+```
+
+If you are not very sure of the exact name of the function, you may also search the documentation by keywords, for example to search functions that can obtain `mean`,
+```{r, eval = FALSE}
+??mean
+```
+
+## Summary
+In this chapter, we installed R and R Studio. We also learned a little bit about functions and objects. We should also be able to install and load packages. Lastly, we set up the working directory.
+
+In the next chapter, we are going to learn about loading datasets into R, managing the loaded data and also some basics on direct data entry.
+
+<!--chapter:end:01-intro.Rmd-->
+
+
+# Data management
+
+Placeholder
+
+
+## Reading, viewing and exporting data
+### The datasets
+### Reading dataset
+### Viewing dataset
+### Exporting dataset from R
+## Built-in datasets in R
+## Data structure
+### Variable types
+### Containers
+### Data frame {-}
+### List {-}
+### Matrix {-}
+## Subsetting
+### Selecting a column (variable) or a row (observation)
+### Selecting columns and rows
+### Selecting based on logical expressions
+## Sorting data
+## Editing data
+### Creating a new variable
+### Recoding into new variables
+#### From a numerical variable {-}
+#### From a categorical variable {-}
+### Removing variables and observations
+## Direct data entry
+## Miscellaneous
+### Sums of the existing variables
+### Handling missing observations (`NA`/not available)
+### Handling duplicates
+## Summary
+
+<!--chapter:end:02-data_mx.Rmd-->
+
+
+# Descriptive statistics
+
+Placeholder
+
+
+## One variable
+### A numerical variable
+### A categorical variable
+## Two variables and more
+### Numerical variables
+### Categorical variables
+## Groups and cross-tabulations
+### By groups
+### Cross-tabulation
+## Summary
+
+<!--chapter:end:03-text.Rmd-->
+
+
+# Visual exploration
+
+Placeholder
+
+
+## Introduction to visualization
+### History of data visualization
+### Processes and objectives of visualization
+### What makes good graphics
+## Graphics packages in R
+## Questions to ask before plotting graphs
+## Using the `graphics` package
+#### Histogram {-}
+#### Kernel density plot {-}
+#### Combining the histogram and density curve {-}
+#### Box-and-whisker plot {-}
+### Plotting relationship between numerical variables
+#### Scatter plot {-}
+### Categorical variables
+### Saving plots in R
+## Using the `lattice` package
+### Histogram, density and box-and-whisker plots
+### Histogram, density and box-and-whisker plots by group
+### Scatter plot
+### Barchart
+### Histograms and box-and-whisker plots
+## Using the `ggplot2` package
+### One variable: Plotting a numerical variable
+#### Histogram {-}
+#### Density curve {-}
+#### Combining the histogram and the density curve {-}
+### One variable: Plotting a categorical variable
+### Two variables: Plotting a numerical and a categorical variable
+#### Overlaying histograms {-}
+#### Interleaving histograms {-}
+#### Overlaying density plots {-}
+#### Using facets {-}
+### Saving plots in ggplot2
+## Summary
+
+<!--chapter:end:04-graphical-kim.Rmd-->
+
+
+# Visual exploration
+
+Placeholder
+
+
+## Introduction to visualization
+### History of data visualization
+### Processes and objectives of visualization
+### What makes good graphics
+## Graphics packages in R
+## Questions to ask before plotting graphs
+## Using the `graphics` package
+#### Histogram {-}
+#### Kernel density plot {-}
+#### Combining the histogram and density curve {-}
+#### Box-and-whisker plot {-}
+### Plotting relationship between numerical variables
+#### Scatter plot {-}
+### Categorical variables
+### Saving plots in R
+## Using the `lattice` package
+### Histogram, density and box-and-whisker plots
+### Histogram, density and box-and-whisker plots by group
+### Scatter plot
+### Barchart
+### Histograms and box-and-whisker plots
+## Using the `ggplot2` package
+### One variable: Plotting a numerical variable
+#### Histogram {-}
+#### Density curve {-}
+#### Combining the histogram and the density curve {-}
+### One variable: Plotting a categorical variable
+### Two variables: Plotting a numerical and a categorical variable
+#### Overlaying histograms {-}
+#### Interleaving histograms {-}
+#### Overlaying density plots {-}
+#### Using facets {-}
+### Saving plots in ggplot2
+## Summary
+
+<!--chapter:end:04-graphical.Rmd-->
+
+
+# Customizing outputs
+
+Placeholder
+
+
+## `cbind` and `rbind`
+## `data.frame()`
+## `paste()` and `paste0()`
+## `summarize()`
+## Summary
+
+<!--chapter:end:05-report.Rmd-->
+
+---
+output:
+  pdf_document: default
+---
+
+# Practicals
+In this chapter, using a number of additional data sets, we will conduct full exploration of the data from data description, descriptive statistics, plots and reporting.
+
+## data 1
+
+
+## data 2
+
+
+## data 3
+
+
+## Summary
+[summary here]
+
+<!--chapter:end:06-examples.Rmd-->
+
+---
+output:
+  pdf_document: default
+  html_document:
+    keep_md: no
+---
+
+# References {-}
+
+
+<!--chapter:end:07-references.Rmd-->
+
+
+# Data transformation (data munging or data wrangling)
+
+Placeholder
+
+
+## Definition of data wrangling 
+## Package: dplyr 
+### About dplyr package 
+## Data wrangling (or transformation) using dplyr
+## Hands-on 1: Preparation and data
+### Working directory and data format
+### Training data
+## Hands-on 2: `select()` and `mutate()` 
+### `select()`
+### `mutate()`
+## Hands-on 3: `arrange()` and `filter()`
+### arrange
+### filter
+## Hands-on 4: group_by 
+### Summarize data - summarize
+## Summary
+## Hands-on 5: forcats
+### New dataset
+### Convert numeric to factor variables
+### Recode old to new levels
+
+<!--chapter:end:09-data_transformation_dplyr_forcats.Rmd-->
+

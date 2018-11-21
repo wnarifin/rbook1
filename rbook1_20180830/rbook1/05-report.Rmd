@@ -1,0 +1,136 @@
+---
+output:
+  pdf_document: default
+---
+
+# Customizing outputs
+In this chapter, we will learn how to combine bits and parts of your outputs into custom-made texts, labels and tables. This will be useful for summarizing and presenting your results, and even for labeling specific axes on your plots. There are a number of ways to achieve this. We will do this by basic functions and packages.
+
+We will again use `cholest.sav` in this chapter. Load the dataset as usual,
+```{r}
+library(foreign)
+cholest <- read.spss("cholest.sav", to.data.frame = TRUE)
+```
+```{r eval=FALSE}
+str(data)
+```
+```
+## 'data.frame':	80 obs. of  5 variables:
+##  $ chol    : num  6.5 6.6 6.8 6.8 6.9 7 7 7.2 7.2 7.2 ...
+##  $ age     : num  38 35 39 36 31 38 33 36 40 34 ...
+##  $ exercise: num  6 5 6 5 4 4 5 5 4 6 ...
+##  $ sex     : Factor w/ 2 levels "female","male": 2 2 2 2 2 2 2 2 2 2 ...
+##  $ categ   : Factor w/ 3 levels "Grp A","Grp B",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  - attr(*, "variable.labels")= Named chr  "cholesterol in mmol/L" "age in year"
+##  "duration of exercise (hours/week)" "" ...
+##  ..- attr(*, "names")= chr  "chol" "age" "exercise" "sex" ...
+##  - attr(*, "codepage")= int 65001
+```
+
+## `cbind` and `rbind`
+We were introduced to `cbind()` already in chapter 3. We will further use `cbind()` to customize our outputs. In addition, we will use its sibling, `rbind()`.
+
+Let say we want to view mean, standard deviation (SD) and sample size (n),
+```{r}
+mean(cholest$age)
+sd(cholest$age)  # SD
+length(cholest$age)  # n
+```
+
+First look at basic `cbind()`,
+```{r}
+cbind(mean = mean(cholest$age), sd = sd(cholest$age), 
+      n = length(cholest$age))
+```
+
+and then we want to give it a proper row name,
+```{r}
+chol_c <- cbind(mean = mean(cholest$age), sd = sd(cholest$age), 
+                n = length(cholest$age))
+rownames(chol_c) <- "Cholestrol"
+chol_c
+```
+
+Compare `cbind()` with `rbind()`. `rbind()` combines the values by row, while `cbind()` combines the values by column. Thus, you can customize the outputs based on your preference.
+```{r}
+rbind(mean = mean(cholest$age), sd = sd(cholest$age), 
+      n = length(cholest$age))
+chol_r = rbind(mean = mean(cholest$age), sd = sd(cholest$age), 
+               n = length(cholest$age))
+colnames(chol_r) <- "Cholestrol"
+chol_r
+```
+
+Now we can add in `lappy()` to come up with vectors of mean and SD for the selected variables. `cbind()` and `rbind()` can also combine vectors,
+```{r}
+mean_cholest <- lapply(cholest[, c("chol", "age", "exercise")], 
+                       mean)
+sd_cholest <- lapply(cholest[, c("chol", "age", "exercise")], sd)
+cbind(mean = mean_cholest, SD = sd_cholest, 
+      n = lengths(cholest[, c("chol", "age", "exercise")]))
+rbind(mean = mean_cholest, SD = sd_cholest, 
+      n = lengths(cholest[, c("chol", "age", "exercise")]))
+```
+
+Now, we can edit the variable names to make the results more presentable,
+```{r}
+names(mean_cholest) <- c("Cholestrol", "Age", "Exercise")
+cbind(mean = mean_cholest, SD = sd_cholest, 
+      n = lengths(cholest[, c("chol", "age", "exercise")]))
+rbind(mean = mean_cholest, SD = sd_cholest, 
+      n = lengths(cholest[, c("chol", "age", "exercise")]))
+```
+
+Now, let us try `cbind()` and `rbind()` on categorical variables, `sex` and `categ`,
+```{r}
+count_cholest <- lapply(cholest[c("sex", "categ")], summary)
+count_cholest
+perc_cholest <- lapply(cholest[c("sex", "categ")], function(x) summary(x)/length(x)*100); perc_cholest
+```
+
+then we list down by variables,
+```{r}
+list(Sex = cbind(n = count_cholest$sex, "%" = perc_cholest$sex),
+     Category = cbind(n = count_cholest$categ, 
+                      "%" = perc_cholest$categ))
+```
+
+## `data.frame()`
+
+## `paste()` and `paste0()`
+We can also use the `table()` and `paste0()` as follows, [[!edit more]]
+```{r}
+tab_categ = table(Category = cholest$categ)
+per_categ = prop.table(tab_categ)*100
+cell_categ = paste0(tab_categ, " (", per_categ, "%)")
+tab_per_categ = tab_categ  # just to set the dimension of `tab_per_categ`
+tab_per_categ[] = cell_categ[]
+tab_per_categ
+```
+
+For cross-tabulation, [[!edit more]]
+```{r}
+tab = table(Category = cholest$categ, Gender = cholest$sex); tab  # count
+per = prop.table(table(Category = cholest$categ, Gender = cholest$sex))*100
+per  # % 
+cbind(tab, per)
+addmargins(tab)  # marginal counts
+# nicer view
+cell = paste0(tab, " (", per, "%)")
+str(tab)
+tab1 = tab
+tab1[] = cell[]
+tab1
+ftable(tab1)  # nicer 'flat' view
+```
+
+## `summarize()`
+We will use `summarize()` from `plyr` package. Make sure you installed `plyr` beforehand.
+```{r}
+library(plyr)
+```
+
+## Summary
+In this chapter, we learned how to combine outputs into texts, labels and tables. This is important 
+
+In the next chapter, using a number of additional data sets, we will use the skills learned from all preceding chapters and conduct full exploration of the data, starting from the data description, descriptive statistics, plots and reporting.

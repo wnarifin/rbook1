@@ -1,0 +1,731 @@
+---
+output:
+  pdf_document: default
+---
+
+# Data management
+In this chapter, we will learn how to deal with data in R. We will learn how load, view and export data. We will also learn about selecting subsamples from the data and editing the data (creating new variables, recoding). The basics of direct data entry for tables will also be introduced.
+
+## Reading, viewing and exporting data
+
+### The datasets
+For the purpose of doing analysis in this chapter and the rest of this book, you can download the datasets from <https://wnarifin.github.io/>.
+
+### Reading dataset
+The easiest way to read a dataset into R is from .csv file,
+```{r}
+data <- read.csv("cholest.csv")
+```
+
+For SPSS and STATA files, we need `foreign` package,
+```{r, eval=FALSE}
+library("foreign")
+data <- read.spss("cholest.sav", to.data.frame = TRUE)
+data <- read.dta("cholest.dta", convert.factors = TRUE)
+```
+
+For Excel file, we need `readxl` package,
+```{r eval=FALSE}
+library("readxl")
+data <- read_excel("cholest.xlsx", sheet = 1)
+```
+
+### Viewing dataset
+This is very easy in R, just type the name,
+```{r, eval=FALSE}
+data
+```
+
+For a nicer view of the dataset, using `View()`
+```{r, eval=FALSE}
+View(data)
+```
+
+We can also view only the first six observations,
+```{r}
+head(data)
+```
+and the last six observations.
+```{r}
+tail(data)
+```
+
+We can view the dimension of the data (row and column),
+```{r}
+dim(data)
+```
+Here, we have 80 rows (observations) and 5 columns (variables).
+
+Next, view the names of the five variables,
+```{r}
+names(data)
+```
+
+Using `str`, in one go we can view these details of the data,
+```{r}
+str(data)
+```
+
+### Exporting dataset from R
+You can also export data into various formats using these packages.
+
+For example, 
+
+1.  to export data into a *comma separated version* (.csv) file, we can use `write.csv` function. 
+2.  to export data into stata format, we can use `write.dta` function
+
+```{r, eval=FALSE}
+write.csv(data, 'data.csv')
+write.dta(data, 'data.dta') 
+```
+
+## Built-in datasets in R
+R also have a number of built-in datasets (some are also provided by loaded packages). The datasets are often used for teaching purposes in learning new statistical analyses. You can view the available datasets by
+```{r}
+data()
+```
+
+```
+## Data sets in package ‘datasets’:
+
+## AirPassengers                     Monthly Airline Passenger Numbers 1949-1960
+## BJsales                           Sales Data with Leading Indicator
+## BJsales.lead (BJsales)            Sales Data with Leading Indicator
+## BOD                               Biochemical Oxygen Demand
+## CO2                               Carbon Dioxide Uptake in Grass Plants
+## ...
+```
+We can view any dataset description by appending "?" to the dataset name. For example,
+```{r}
+?chickwts
+```
+We will use `chickwts`, `women` and `infert` datasets in the next chapter.
+
+## Data structure
+To completely understand the output from `str()` of `data`, there are several basics that we must understand; the variable types and the containers.
+
+### Variable types
+Again, from
+```{r}
+str(data)
+```
+you will notice `num` and `Factor`. These represent the variable types:
+
+- num = numerical variable.
+- Factor = categorical variable.
+
+Each column/variable in R is a vector, which is a collection of values of the same type. You can create the vectors as follows (pay attention to the variable type):
+```{r}
+data_num = c(1,2,3,4,5); str(data_num)
+data_cat = factor( c("M", "F", "M", "F", "M") ); str(data_cat)
+```
+`c()` function is used to combine several values together as a vector. You may use `;` to write two lines of short codes into one line.
+
+There are several more types of vectors, but knowing these two are sufficient for starter. You can view other types from help,
+```{r}
+?typeof
+```
+
+### Containers
+Based on `str(data)`, we notice that our `data` is a data frame (`data.frame`). Basic containers that we usually use are data frame, list and matrix. These can be easily understood by examples below (utilizing our recently created vectors `data_num` and `data_cat`).
+
+### Data frame {-}
+```{r}
+data.frame(data_num, data_cat)
+data_frame = data.frame(data_num, data_cat); str(data_frame)
+```
+
+### List {-}
+```{r}
+list(data_num, data_cat)
+data_list = list(data_num, data_cat); str(data_list)
+```
+
+### Matrix {-}
+```{r}
+matrix(data = c(data_num, data_cat), nrow = 5, ncol = 2)
+data_matrix = matrix(data = c(data_num, data_cat), nrow = 5, 
+                     ncol = 2)
+data_matrix
+str(data_matrix)  # shown as numerical for both
+```
+When vectors are combined in a matrix, the factor will be turned into numeric. Matrix can only contain one type of data only. Contrast this to list.
+
+You may have a look at array `?array` and table `?table`.
+
+## Subsetting
+Subsetting means "selecting parts of data". It allows selecting only a number of variables (columns) or observations (rows) from a data frame. There are ways to do that. Basically, we can use
+
+- `$` sign.
+- `[ , ]` square brackets.
+- `subset()`.
+
+Let us use `cholest.sav` dataset,
+```{r}
+library(foreign)  # to use `read.spss`
+data <- read.spss("cholest.sav", to.data.frame = TRUE)
+```
+
+```{r eval=FALSE}
+str(data)
+```
+```
+## 'data.frame':	80 obs. of  5 variables:
+##  $ chol    : num  6.5 6.6 6.8 6.8 6.9 7 7 7.2 7.2 7.2 ...
+##  $ age     : num  38 35 39 36 31 38 33 36 40 34 ...
+##  $ exercise: num  6 5 6 5 4 4 5 5 4 6 ...
+##  $ sex     : Factor w/ 2 levels "female","male": 2 2 2 2 2 2 2 2 2 2 ...
+##  $ categ   : Factor w/ 3 levels "Grp A","Grp B",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  - attr(*, "variable.labels")= Named chr  "cholesterol in mmol/L" "age in year"
+##  "duration of exercise (hours/week)" "" ...
+##  ..- attr(*, "names")= chr  "chol" "age" "exercise" "sex" ...
+##  - attr(*, "codepage")= int 65001
+```
+```{r}
+head(data)
+tail(data)
+```
+
+### Selecting a column (variable) or a row (observation)
+Let say, to select `age`, which is the second variable, first using `$`
+```{r}
+data$age
+```
+and column/variable number,
+```{r}
+data[ , 2]
+```
+and using the name within `[]`,
+```{r}
+data[ , "age"]
+```
+Please keep in mind, the name is case sensitive. Thus make sure the spelling and capitalization are correct.
+
+Then, to select the seventh observation,
+```{r}
+data[7, ]
+```
+
+We can also choose a specific combination of row and column, let say the 73rd and `age`,
+```{r}
+data[73, 2]
+data[73, "age"]
+```
+
+### Selecting columns and rows
+Let us select `chol`, `age` and `sex`. We can use also square brackets
+```{r eval=FALSE}
+data[ , c("chol", "age", "sex")]
+```
+```{r echo=FALSE}
+head(data[ , c("chol", "age", "sex")], 10)
+```
+```
+## ... some data omitted.
+```
+
+or the column numbers
+```{r eval=FALSE}
+data[ , c(1:2, 4)]
+```
+```{r echo=FALSE}
+head(data[ , c(1:2, 4)], 10)
+```
+```
+## ... some data omitted.
+```
+```{r eval=FALSE}
+data[ , c(1, 2, 4)]
+```
+```{r echo=FALSE}
+head(data[ , c(1, 2, 4)], 10)
+```
+```
+## ... some data omitted.
+```
+selecting column 1 to 2, and column 4. Note the use of `c()` function here. It is used to combine the numbers. R needs this to let it know we want to view all these columns together. `:` means `to`. Here `1:2` means from `1 to 2`.
+
+To select seventh to 14th observations,
+```{r}
+data[7:14, ]
+```
+
+Then, we want to view specific combination of rows and columns. In the example below, it can be done in several ways in R.
+```{r}
+data[7:14, c(2, 4)]
+data[7:14, c("chol", "age")]
+data[c(1:2, 7:14), c(2, 4)]
+data[c(1:2, 7:14), c("chol", "age")]
+```
+
+Quite intrestingly, not only you can select specific rows/columns, you can also exclude them! For example, to select the rest of the variables, except `age`,
+```{r, eval=FALSE}
+data[ , -2]
+```
+```{r, echo=FALSE}
+head(data[ , -2], 10)
+```
+```
+## ... some data omitted.
+```
+using `-` sign before the column number. Please note that this syntax is only possible with column/row numbers, you cannot use it in reference to the names.
+
+You can try the following,
+```{r}
+data[-c(1:35, 40:75), ]
+data[-c(1:35, 40:75), -c(1:2, 4)]
+```
+to explude the specific rows and columns. This is a very important and neat syntax whenever we are want to exclude some observations or variables for during the analysis.
+
+### Selecting based on logical expressions
+Practically, we want to c4oose observations based on certain criteria, for example those aged more than 35 year old, only females subjects and so on. This is easy with `subset()`, for example `age > 45`,
+```{r}
+subset(data, age > 45)
+```
+```{r eval=F}
+subset(data, sex == "female")
+```
+```{r echo=F}
+head(subset(data, sex == "female"), 10)
+```
+```
+## ... some data omitted.
+```
+
+alternatively, we can use square brackets with a number of variants for the same subset,
+```{r eval=F}
+data[data$age > 45, ]
+data[data[ , "age"] > 45, ]
+data[data[ , 2] > 45, ]
+```
+```{r echo=F}
+head(data[data$sex == "female", ], 10)
+```
+```
+## ... some data omitted.
+```
+but the syntax it quite messy; we have to repeat `data` twice here, and the sysntax is difficult to grasp. But knowing the syntax is useful, just in case subset doesn't work.
+
+Logical expressions are several, which are
+- `==` equal.
+- `>=` more than or equal.
+- `<=` less than or equal.
+- `>` more than.
+- `<` less than.
+- `!=` not equal.
+
+You can play around with these expressions by changing `>` to these expressions in the example above.
+
+`subset()` has this simple syntax, `subset(data, subset/row_expression, select = column)`. It can be used to select specific variables, for example,
+```{r eval=F}
+subset(data, select = c("chol", "age", "sex"))
+subset(data, select = c(chol, age, sex))
+```
+```{r echo=F}
+head(subset(data, select = c(chol, age, sex)), 10)
+```
+```
+## ... some data omitted.
+```
+by omitting the `subset =` argument. Notice that you don't even need to quote names using `" "` in `select =` argument parameter.
+
+Interestingly, using `subset()`, you can apply `:` sign to names,
+```{r eval=F}
+subset(data, select = chol:sex)
+```
+```{r echo=F}
+head(subset(data, select = chol:sex), 10)
+```
+```
+## ... some data omitted.
+```
+
+Now let us try this, select those aged more or equal to 45, and `age`, `sex` variables,
+```{r}
+subset(data, age >= 45, select = c(age, sex))
+```
+
+Then try with a combination of expressions to select rows, for example those aged less or equal to 35 and/or female, and `chol`, `age` and `sex` variables,
+```{r}
+subset(data, age <= 35 & sex == "female", select = c(age, sex))
+subset(data, age <= 35 | sex == "female", select = c(age, sex))
+```
+Notice we used `&` for AND and `|` for OR in between the expressions.
+
+Run `levels()` to remind us the available factor levels for `sex`,
+```{r}
+levels(data$sex)
+```
+
+For the sake of completeness, you can try the following codes using `[ , ]` and `$` in place of `subset()`,
+```{r}
+data[data$age <=35 & data$sex == "female", c("age", "sex")]
+data[data$age <=35 | data$sex == "female", c("age", "sex")]
+data[data$age <=35 & data$sex == "female", ]$age  # view `age` only
+# using [ , ] and $ combination.
+```
+
+Actually, the most important reason why we bother with subsetting is that we can easy assign a subset of the dataset to a new data object. This will make our analysis easier when we deal with large datasets. For example,
+```{r}
+data_short <- data[1:20, c("age", "sex")]
+data_short
+( data_short <- data[1:20, c("age", "sex")] )
+str(data_short)
+```
+There's a new trick here. If we want to view the assigned data in one step, include `( )` the assignment codes in between the round brackets.
+
+## Sorting data
+At times, we want to view the data in ascending or descending order, especially for numerical variables. Let us start with `sort()`. `sort()` is used on a vector, for example here the vector of `age`,
+```{r}
+sort(data$age)  # values in ascending order
+sort(data$age, decreasing = TRUE)  # values in descending order
+```
+
+Next, `order()` is used on data frame. `order()` gives the ordering index in ascending order. This can be used to provide the row number whenever we use `[ , ]` to subset the data. Here we order by `age`,
+```{r eval=F}
+order(data$age)  # gives the index in ascending order
+data[order(data$age), ]  # rows follow the index
+```
+```{r echo=F}
+order(data$age)  # gives the index in ascending order
+head(data[order(data$age), ], 10)  # rows follow the index
+```
+```
+## ... some data omitted.
+```
+
+```{r eval=F}
+data[order(data$age, decreasing = TRUE), ]  # descending order
+```
+```{r echo=F}
+head(data[order(data$age, decreasing = TRUE), ], 10)  # descending order
+```
+```
+## ... some data omitted.
+```
+
+Now, we want to order by `age` and `exercise`. The ordering starts from the last variable in the list (`data$age`) to the first variable in the list (`data$exercise`),
+```{r eval=F}
+order(data$exercise, data$age)  # order by age, then exercise
+data[order(data$exercise, data$age), ]  # ascending order
+```
+```{r echo=F}
+order(data$exercise, data$age)  # order by age, then exercise
+head(data[order(data$exercise, data$age), ], 10)  # ascending order
+```
+```
+## ... some data omitted.
+```
+
+```{r eval=F}
+data[order(data$exercise, data$age, decreasing = TRUE), ]  # descending order
+```
+```{r echo=F}
+head(data[order(data$exercise, data$age, decreasing = TRUE), ], 10)  # descending order
+```
+```
+## ... some data omitted. 
+```
+
+```{r eval=F}
+data[order(data$exercise, data$age, decreasing = c(TRUE, FALSE)), ]
+# age ascending order, exercise descending order
+```
+```{r echo=F}
+head(data[order(data$exercise, data$age, decreasing = c(TRUE, FALSE)), ], 10)  # age ascending order, exercise descending order
+```
+```
+## ... some data omitted.
+```
+
+Now, we will use `arrange()` from `plyr` package. Make sure you installed `plyr` beforehand. `arrange()` has a simpler syntax, `arrange(dataset, variables)`, and can be applied easily as shown below,
+```{r eval=F}
+library(plyr)
+arrange(data, exercise, age)  # all ascending
+```
+```{r echo=F}
+library(plyr)
+head(arrange(data, exercise, age), 10)  # all ascending
+```
+```
+## ... some data omitted.
+```
+
+```{r eval=F}
+arrange(data, desc(exercise), age)  # age ascending order, 
+# exercise descending order
+```
+```{r echo=F}
+head(arrange(data, desc(exercise), age), 10)  # age ascending order, exercise descending order
+```
+```
+## ... some data omitted.
+```
+
+## Editing data
+Using the same dataset `cholest.sav`, we want to add new variables based on the existing variables.
+
+### Creating a new variable
+It is easy to create a new variable in R. We only have to decide on a name for the new variable,  and the include it with `$name` to the data frame.
+
+For example, to create age in months `age_month`, we multiply the existing variable age in years `age` by 12, then assign the values to `data$age_month as follows,
+```{r}
+data$age_month <- data$age * 12
+data$age_month
+```
+
+### Recoding into new variables
+
+#### From a numerical variable {-}
+From the numerical `age` variable, let say we want to break into three groups: less than 40, 40-50 and more than 50.
+```{r}
+data$age_cat <- cut(data$age, breaks = c(-Inf, 40, 50, Inf),
+                    labels = c("< 40", "40-50", "> 50"))
+```
+What is meant by `breaks = c(-Inf, 40, 50, Inf)` here is "from minus infinity to below 40, between 40 to 50, from above 50 to infinity".
+```{r}
+table(data$age_cat)
+str(data$age_cat)
+```
+
+#### From a categorical variable {-}
+Using the recently created `age_cat` variable,
+```{r}
+levels(data$age_cat)
+table(data$age_cat)
+```
+
+Only one observation is labeled as `> 50`. We want to combine `40-50` with `> 50`. Make sure you installed `car` package to use `recode()` function in the codes below.
+```{r}
+library(car)
+data$age_cat1 <- recode(data$age_cat, 
+                        "c('40-50','> 50') = '40 & above'")
+```
+Pay attention to the use of `""` and `''` in `recode()`.
+
+```{r}
+levels(data$age_cat1)
+table(data$age_cat1)  # combined
+```
+
+### Removing variables and observations
+You can easily remove variables and observations by using subsetting method above. Here we want to consider another approach to do this in R. For example you only need to remove one variable, let say `age_month`, you can assign the variable to `NULL`,
+```{r}
+data$age_month <- NULL
+names(data)
+```
+then let say we want to remove `exercise` and `categ`,
+```{r}
+data[c("exercise", "categ")] <- NULL
+names(data)
+```
+
+We can also easily select which subjects we want to keep or remove in the data object. Let say we want to remove subject number 20, 39 and 71 from our data frame, we assign `NA` (not available) to the data belonging to these observations,
+```{r}
+dim(data)
+data[c(20, 39, 71), ] <- NA
+```
+then we use `na.omit()` to remove the observations,
+```{r}
+data = na.omit(data)
+dim(data)
+```
+We will learn more about handling missing observations (`NA`) below.
+
+But this approach of using `NA` is not as good as subsetting, which is simpler,
+```{r}
+dim(data)
+data <- data[-c(20, 39, 71), ]
+dim(data)
+```
+
+## Direct data entry
+We can enter short data directly using `read.table`. This is very useful whenever we want to analyze data from tables, for example those obtained from research articles, and also data provided in textbooks.
+
+For example, you can easily create a standard data frame, consisting of patient's ID, group and BMI for six patients,
+
+ID | Group | BMI |
+---|---|---:|
+1 | Fat | 30 |
+2 | Fat | 31 | 
+3 | Fat | 32 |
+4 | Thin | 20 |
+5 | Thin | 19 |
+6 | Thin | 18 |
+
+```{r}
+data_frame <- read.table(header = TRUE, text = "
+ID Group BMI
+1 Fat 30
+2 Fat 31
+3 Fat 32
+4 Thin 20
+5 Thin 19
+6 Thin 18
+")
+str(data_frame)
+data_frame
+```
+
+Recall what you learned in **Containers** section, we combined numerical `num_data` and factor `cat_data` vectors into a data frame namely `data_frame` right? As you might have guessed, you can also create the data frame by combining the vectors,
+```{r}
+ID <- 1:6
+Group <- c("Fat", "Fat", "Fat", "Thin", "Thin", "Thin")
+BMI <- c(30, 31, 32, 20, 19, 18)
+data_frame <- data.frame(ID, Group, BMI)
+str(data_frame)
+data_frame
+```
+However, we find this approach less intuitive because we have to enter by variables/vectors. Take note that we used a shortcut here to generate numbers from one to six for `ID`. So instead of `ID <- c(1, 2, 3, 4, 5, 6)`, we can just write `ID <- 1:6`. 
+
+You can also easily enter tabulated data in R, as shown below,
+
+| | Cancer | No Cancer
+| --- | ---: | ---:
+| Smoker | 80 | 10
+| Non-smoker | 5 | 100
+
+```{r}
+data_table <- read.table(header = FALSE, text = "
+80 10
+5 100
+                        ")
+colnames(data_table) <- c("Cancer", "No Cancer")
+rownames(data_table) <- c("Smoker", "Non-smoker")
+str(data_table)  # data_table is a data frame
+```
+The numbers are separated by space. We set the row and column names by `rownames` and `colnames` respectively. This will create a data frame.
+
+However, to create a proper table in R, we need a few more steps. We need to convert the data frame to a matrix. Remember, a matrix container will force the data to be of the same type only. Then, we will turn the matrix into a proper table. The steps are shown below,
+```{r}
+data_table <- as.matrix(data_table) # convert data_table to matrix
+data_table <- as.table(data_table) # then to table
+str(data_table)  # data_table is now a table
+data_table
+```
+
+## Miscellaneous
+Next, we will go through a number of additional important data management skills.
+
+### Sums of the existing variables
+Among the most important functions in R are related to obtaining sums. Here, we load `mtf.csv` dataset [@arifin2017_irt]. The dataset consists of two multiple true-false questions, with five independent statements each. The correct answers are awarded one (coded as 1) mark each, and incorrect answers are awarded zero (coded as 0) mark each.
+```{r}
+mtf <- read.csv("mtf.csv")
+```
+
+The basic `sum()` works on a vector, e.g. `mtf$Q1A`,
+```{r}
+sum(mtf$Q1A)
+```
+It gives the total number of correct answers for question 1A.
+
+Next, we obtain the total number of correct answers for all respondents, i.e. by rows. Hence we use `rowSums()`,
+```{r}
+rowSums(mtf)
+```
+
+While `sum()` gives use the total per vector, we can easily obtain for all questions (columns) by `colSums()`,
+```{r}
+colSums(mtf)
+```
+
+We can also easily create new variables `total_mark` and `percent` as follows,
+```{r}
+mtf$total_mark <- rowSums(mtf[ , 1:10])
+mtf$percent <- (mtf$total_mark/10)*100
+head(mtf)
+```
+
+### Handling missing observations (`NA`/not available)
+We start by generating a data frame with `NA` and " " (empty entry),
+```{r}
+data_na = read.table(header = T, sep = ",", text = "
+ID, age, gender
+8110, 20, M
+8110, 20, M
+1627, 30, 
+1234, 23, F
+4567, , F
+4567, 12, F
+")  # we use comma separated values in this example
+str(data_na); data_na
+```
+
+There will be a `NA` in `age` and " " category in gender,
+```{r}
+summary(data_na)  # NA in age, " " category in gender
+```
+
+We now verify whether there is `NA` in the data frame,
+```{r}
+anyNA(data_na)
+```
+`TRUE`, yes there is a NA, it is located in,
+```{r}
+is.na(data_na)
+```
+and you notice here " " is treated as a category, not `NA` for categorical variable `gender`.
+
+First we omit the observation containing `NA`,
+```{r}
+dim(data_na)  # 6 observations
+data_na_clean = na.omit(data_na)
+dim(data_na)  # 5 observations
+summary(data_na_clean)
+```
+
+Now we handle " " by excluding the observation containing empty gender information,
+```{r}
+data_na_cleaner = data_na_clean[data_na_clean$gender != " ", ]
+data_na_cleaner
+```
+
+### Handling duplicates
+Let say we have this data:
+```{r}
+duplicate <- read.table(header = T, text = "
+ID age gender
+8110 20 M
+8110 20 M
+1627 30 M
+1234 23 F
+4567 12 F
+4567 12 F
+")
+str(duplicate); duplicate
+```
+
+We use and `anyDuplicated()` and `duplicated()`, functions in `base` R,
+```{r}
+anyDuplicated(duplicate)  # 2 duplicates
+```
+and we found two duplicates.
+
+We check for duplicated `ID`,
+```{r}
+dupli <- duplicate[duplicated(duplicate), "ID"]
+dupli
+```
+view the duplicated entries,
+```{r}
+duplicate[duplicate$ID == dupli, ]
+```
+
+and view entries minus the duplicated ones by,
+```{r}
+duplicate[duplicate$ID != dupli, ]
+```
+or this way,
+```{r}
+duplicate[!duplicated(duplicate), ]
+```
+
+Then you can easily keep data frame with the unduplicated entries,
+```{r}
+noduplicate = duplicate[data$ID != dupli, ]
+```
+
+## Summary
+In this chapter, we learned how to handle data in R, which is very flexible. We learned how load, view and export data. We also learned how select subsamples from the data, and how to edit the data (creating new variables, recoding). Then we learned some basics on direct data entry for tables.
+
+In the next chapter, we are going to learn about how to explore the variables by means of basic descriptive statistics.
